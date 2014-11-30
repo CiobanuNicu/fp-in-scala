@@ -10,16 +10,9 @@ object List {
     case Cons(x, xs) => f(x, foldRight(xs, z)(f))
   }
 
-  def sum (ints: List[Int]): Int = ints match {
-    case Nil => 0
-    case Cons(x, xs) => x + sum(xs)
-  }
+  def sum (ns: List[Int]): Int = foldRight(ns, 0)(_ + _)
 
-  def product (ds: List[Double]): Double = ds match {
-    case Nil => 1.0
-    case Cons(0.0, _) => 0.0
-    case Cons(x, xs) => x * product(xs)
-  }
+  def product (ds: List[Double]): Double = foldRight(ds, 1.0)(_ *_)
 
   def apply [A] (as: A*): List[A] =
     if (as.isEmpty) Nil
