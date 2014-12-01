@@ -10,6 +10,12 @@ object List {
     case Cons(x, xs) => f(x, foldRight(xs, z)(f))
   }
 
+  @annotation.tailrec
+  def foldLeft [A, B] (as: List[A], z: B)(f: (B, A) => B): B = as match {
+    case Cons(x, xs) => foldLeft(xs, f(z, x))(f)
+    case Nil => z
+  }
+
   def sum (ns: List[Int]): Int = foldRight(ns, 0)(_ + _)
 
   def product (ds: List[Double]): Double = foldRight(ds, 1.0)(_ *_)
