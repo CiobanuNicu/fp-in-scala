@@ -14,6 +14,8 @@ object List {
 
   def product (ds: List[Double]): Double = foldRight(ds, 1.0)(_ *_)
 
+  def length [A] (as: List[A]): Int = foldRight(as, 0)((a, len) => len + 1)
+
   def apply [A] (as: A*): List[A] =
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
