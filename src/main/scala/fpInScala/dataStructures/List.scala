@@ -16,11 +16,11 @@ object List {
     case Nil => z
   }
 
-  def sum (ns: List[Int]): Int = foldRight(ns, 0)(_ + _)
+  def sum (ns: List[Int]): Int = foldLeft(ns, 0)(_ + _)
 
-  def product (ds: List[Double]): Double = foldRight(ds, 1.0)(_ *_)
+  def product (ds: List[Double]): Double = foldLeft(ds, 1.0)(_ * _)
 
-  def length [A] (as: List[A]): Int = foldRight(as, 0)((a, len) => len + 1)
+  def length [A] (as: List[A]): Int = foldLeft(as, 0)((len, a) => len + 1)
 
   def apply [A] (as: A*): List[A] =
     if (as.isEmpty) Nil
