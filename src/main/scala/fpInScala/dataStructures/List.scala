@@ -22,6 +22,11 @@ object List {
 
   def length [A] (as: List[A]): Int = foldLeft(as, 0)((len, a) => len + 1)
 
+  def reverse [A] (as: List[A]): List[A] = foldLeft(as, Nil: List[A]) ((b, a) => a match {
+    case Nil => b
+    case _ => Cons(a, b)
+  })
+
   def apply [A] (as: A*): List[A] =
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
