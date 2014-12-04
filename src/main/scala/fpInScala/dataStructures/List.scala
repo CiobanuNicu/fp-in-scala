@@ -24,6 +24,10 @@ object List {
 
   def reverse [A] (as: List[A]): List[A] = foldLeft(as, Nil: List[A]) ((b, a) => Cons(a, b))
 
+  def appendRight [A] (a1: List[A], a2: List[A]): List[A] = foldRight(a1, a2)(Cons(_, _))
+
+  def appendLeft [A] (a1: List[A], a2: List[A]): List[A] = foldLeft(reverse(a1), a2)((b, a) => Cons(a, b))
+
   def apply [A] (as: A*): List[A] =
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
