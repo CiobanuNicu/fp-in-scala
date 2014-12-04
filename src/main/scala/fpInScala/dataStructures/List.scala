@@ -28,6 +28,8 @@ object List {
 
   def appendLeft [A] (a1: List[A], a2: List[A]): List[A] = foldLeft(reverse(a1), a2)((b, a) => Cons(a, b))
 
+  def concatenate [A] (ls: List[List[A]]): List[A] = foldRight(ls, Nil: List[A]) (appendLeft)
+
   def apply [A] (as: A*): List[A] =
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
