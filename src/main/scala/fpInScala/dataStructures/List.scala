@@ -30,6 +30,8 @@ object List {
 
   def concatenate [A] (ls: List[List[A]]): List[A] = foldRight(ls, Nil: List[A]) (appendLeft)
 
+  def map [A, B] (as: List[A]) (f: A => B): List[B] = foldRight(as, Nil: List[B]) ((a, b) => Cons(f(a), b))
+
   def apply [A] (as: A*): List[A] =
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
