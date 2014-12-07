@@ -11,16 +11,16 @@ object List {
   }
 
   @annotation.tailrec
-  def foldLeft [A, B] (as: List[A], z: B)(f: (B, A) => B): B = as match {
+  def foldLeft [A, B] (as: List[A], z: B) (f: (B, A) => B): B = as match {
     case Cons(x, xs) => foldLeft(xs, f(z, x))(f)
     case Nil => z
   }
 
-  def sum (ns: List[Int]): Int = foldLeft(ns, 0)(_ + _)
+  def sum (ns: List[Int]): Int = foldLeft(ns, 0) (_ + _)
 
-  def product (ds: List[Double]): Double = foldLeft(ds, 1.0)(_ * _)
+  def product (ds: List[Double]): Double = foldLeft(ds, 1.0) (_ * _)
 
-  def length [A] (as: List[A]): Int = foldLeft(as, 0)((len, a) => len + 1)
+  def length [A] (as: List[A]): Int = foldLeft(as, 0) ((len, _) => len + 1)
 
   def reverse [A] (as: List[A]): List[A] = foldLeft(as, Nil: List[A]) ((b, a) => Cons(a, b))
 
