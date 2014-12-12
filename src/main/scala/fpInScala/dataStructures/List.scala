@@ -38,6 +38,12 @@ object List {
     (a, b) => if (f(a)) Cons(a, b) else b
   }
 
+  def zipWith [A, B] (list1: List[A], list2: List[A]) (f: (A, A) => B): List[B] = (list1, list2) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2)(f))
+  }
+
   def apply [A] (as: A*): List[A] =
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
