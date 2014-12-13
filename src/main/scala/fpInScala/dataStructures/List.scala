@@ -44,6 +44,22 @@ object List {
     case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2)(f))
   }
 
+  @annotation.tailrec
+  def hasSubsequence [A] (sup: List[A], sub: List[A]): Boolean = (sup, sub) match {
+    case (Nil, _) => false
+    case (_, Nil) => true
+    case (Cons(supHead, supTail), Cons(subHead, subTail)) => {
+      if (supHead == subHead) {
+        (supTail, subTail) match {
+          case (Nil, Nil) => true
+          case _ => hasSubsequence(supTail, subTail)
+        }
+      } else {
+        hasSubsequence(supTail, sub)
+      }
+    }
+  }
+
   def apply [A] (as: A*): List[A] =
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
