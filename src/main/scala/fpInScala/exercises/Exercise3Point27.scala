@@ -5,6 +5,8 @@ import fpInScala.dataStructures.{Branch, Leaf, Tree}
 object Exercise3Point27 {
   // Write a function depth that returns the maximum path length from the root of a tree to any leaf.
 
-  // Defer to the implementation on Tree
-  def depth [A] (t: Tree[A]): Int = Tree.depth(t)
+  def depth [A] (t: Tree[A]): Int = t match {
+    case Leaf(_) => 0
+    case Branch(l, r) => 1 + (depth(l) max depth(r))
+  }
 }
