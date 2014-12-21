@@ -19,3 +19,7 @@ sealed trait Option [+A] {
 }
 case class Some [+A] (get: A) extends Option[A]
 case object None extends Option[Nothing]
+
+object Option {
+  def map2 [A, B, C] (a: Option[A], b: Option[B]) (f: (A, B) => C): Option[C] = a flatMap(x => b.map(y => f(x, y)))
+}
