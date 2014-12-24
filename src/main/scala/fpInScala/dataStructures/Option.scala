@@ -26,4 +26,8 @@ object Option {
   def sequence [A] (as: List[Option[A]]): Option[List[A]] = List.foldRight(as, Some(Nil): Option[List[A]]) {
     (a, b) => map2(a, b)(Cons(_, _))
   }
+
+  def traverse [A, B] (as: List[A]) (f: A => Option[B]): Option[List[B]] = List.foldRight(as, Some(Nil): Option[List[B]]) {
+    (a, b) => map2(f(a), b)(Cons(_, _))
+  }
 }
