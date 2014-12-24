@@ -22,4 +22,8 @@ case object None extends Option[Nothing]
 
 object Option {
   def map2 [A, B, C] (a: Option[A], b: Option[B]) (f: (A, B) => C): Option[C] = a flatMap(x => b.map(y => f(x, y)))
+
+  def sequence [A] (as: List[Option[A]]): Option[List[A]] = List.foldRight(as, Some(Nil): Option[List[A]]) {
+    (a, b) => map2(a, b)(Cons(_, _))
+  }
 }
