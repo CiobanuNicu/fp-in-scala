@@ -12,9 +12,7 @@ object Either {
       Right(xs.sum / xs.length)
     }
 
-  def safeDiv (x: Int, y: Int): Either[Exception, Int] =
-    try Right(x / y)
-    catch { case e: Exception => Left(e) }
+  def safeDiv (x: Int, y: Int): Either[Exception, Int] = Try(x / y)
 
   def Try [A] (a: => A): Either[Exception, A] =
     try Right(a)
