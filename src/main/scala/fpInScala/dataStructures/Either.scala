@@ -16,7 +16,7 @@ sealed trait Either [+E, +A] {
     case _ => this
   }
 
-  def map2 [EE >: E, B, C] (b: Either[EE, B]) (f: (A, B) => C): Either[EE, C] = this flatMap(x => b map(y => f(x, y)))
+  def map2 [EE >: E, B, C] (b: Either[EE, B]) (f: (A, B) => C): Either[EE, C] = for { x <- this; y <- b } yield f(x, y)
 }
 
 case class Left [+E] (value: E) extends Either [E, Nothing]
