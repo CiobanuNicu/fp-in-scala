@@ -38,8 +38,14 @@ object Exercise8 {
         case _ => Errors(myErrors)
       }
     }
+
+    def orElse [EE >: E, B >: A] (b: => Eithers[EE, B]): Eithers[EE, B] = (this, b) match {
+      case (Success(_), _) => this
+      case (Errors(_), Success(_)) => b
+      case (Errors(myErrors), Errors(yourErrors)) => Errors(myErrors ++ yourErrors)
+    }
   }
 
-  case class Errors [+A] (get: Seq[A]) extends Eithers[A, Nothing]
-  case class Success [+B] (get: B) extends Eithers[Nothing, B]
+  case class Errors [+E] (get: Seq[E]) extends Eithers[E, Nothing]
+  case class Success [+A] (get: A) extends Eithers[Nothing, A]
 }

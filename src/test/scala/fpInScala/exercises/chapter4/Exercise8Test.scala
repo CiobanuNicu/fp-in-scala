@@ -41,4 +41,25 @@ class Exercise8Test extends FlatSpec with ShouldMatchers {
       }
     }
   }
+
+  "Eithers.orElse" should "return itself when it's a Success" in {
+    Success("Winner!").orElse(Success("Another Winner!")) should be (Success("Winner!"))
+    Success("Winner!").orElse(Errors(Seq("Loser", "But it's not my fault"))) should be (Success("Winner!"))
+  }
+
+  "Eithers.orElse" should "return the alternate when it's Errors but the alternate is a Success" in {
+    Errors(Seq("Close but nice try")).orElse(Success("Consolation prize")) should be (Success("Consolation prize"))
+  }
+
+  "Eithers.orElse" should "return Errors combining the errors from both itself and the alternate when the alternate is also Errors" in {
+    val result = Errors(Seq("Insult")).orElse(Errors(Seq("Injury")))
+
+    result match {
+      case Success(_) => fail("Got Success when Errors was expected")
+      case Errors(errorList) => {
+        errorList should contain ("Insult")
+        errorList should contain ("Injury")
+      }
+    }
+  }
 }
