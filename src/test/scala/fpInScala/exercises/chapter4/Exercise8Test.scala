@@ -62,4 +62,51 @@ class Exercise8Test extends FlatSpec with ShouldMatchers {
       }
     }
   }
+
+  val parseInt: String => Eithers[String, Int] = (s: String) =>
+    try {
+      Success(s.toInt)
+    } catch {
+      case e: Throwable => Errors(Seq(e.getMessage))
+    }
+
+  "Eithers.traverse" should "return a Success of empty list for an empty list" in {
+    Eithers.traverse(List())(parseInt) should be (Success(List()))
+  }
+
+  "Eithers.traverse" should "return a Success of list of all integers parsed in the input list" in {
+    Eithers.traverse(List("1", "2", "3"))(parseInt) should be (Success(List(1, 2, 3)))
+  }
+
+  "Eithers.traverse" should "return an Errors of list of one error for a list of string that won't parse" in {
+    Eithers.traverse(List("not an int"))(parseInt) should be (Errors(Seq("For input string: \"not an int\"")))
+  }
+
+  "Eithers.traverse" should "return an Errors of list of two errors for a list of two strings that won't parse" in {
+    Eithers.traverse(List("a", "b"))(parseInt) should be (Errors(Seq("For input string: \"a\"", "For input string: \"b\"")))
+  }
+
+  "Eithers.sequence" should "return Success(List()) for List()" in {
+    Eithers.sequence(List()) should be (Success(List()))
+  }
+
+  "Eithers.sequence" should "return Success(List(1)) for List(Success(1)" in {
+    Eithers.sequence(List(Success(1))) should be (Success(List(1)))
+  }
+
+  "Eithers.sequence" should "return Success(List(1, 2)) for List(Success(1), Success(2)" in {
+    Eithers.sequence(List(Success(1), Success(2))) should be (Success(List(1, 2)))
+  }
+
+  "Eithers.sequence" should "return Errors(Seq(foo)) for List(Errors(Seq(foo))" in {
+    Eithers.sequence(List(Errors(Seq("foo")))) should be (Errors(Seq("foo")))
+  }
+
+  "Eithers.sequence" should "return Errors(Seq(foo, bar)) for List(Errors(Seq(foo)), Errors(Seq(bar)))" in {
+    Eithers.sequence(List(Errors(Seq("foo")), Errors(Seq("bar")))) should be (Errors(Seq("foo", "bar")))
+  }
+
+  "Eithers.sequence" should "return Errors(Seq(foo, bar)) for List(Success(7), Errors(Seq(foo)), Errors(Seq(bar)), Success(8))" in {
+    Eithers.sequence(List(Success(7), Errors(Seq("foo")), Errors(Seq("bar")), Success(8))) should be (Errors(Seq("foo", "bar")))
+  }
 }

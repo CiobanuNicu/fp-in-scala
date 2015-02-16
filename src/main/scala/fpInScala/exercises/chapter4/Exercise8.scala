@@ -48,4 +48,13 @@ object Exercise8 {
 
   case class Errors [+E] (get: Seq[E]) extends Eithers[E, Nothing]
   case class Success [+A] (get: A) extends Eithers[Nothing, A]
+
+  object Eithers {
+    def traverse [E, A, B] (as: List[A]) (f: A => Eithers[E, B]): Eithers[E, List[B]] =
+      as.foldRight [Eithers[E, List[B]]] (Success(Nil)) {
+        (a, b) => f(a).map2(b)(_ :: _)
+      }
+
+    def sequence [E, A] (es: List[Eithers[E, A]]): Eithers[E, List[A]] = traverse(es)(identity)
+  }
 }
