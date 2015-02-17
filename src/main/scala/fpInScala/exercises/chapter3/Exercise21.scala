@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
 
 object Exercise21 {
   // Use flatMap to implement filter.

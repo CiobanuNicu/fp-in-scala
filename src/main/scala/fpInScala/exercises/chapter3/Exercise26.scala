@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.tree._
 
 object Exercise26 {
   // Write a function maximum that returns the maximum element in a Tree[Int].

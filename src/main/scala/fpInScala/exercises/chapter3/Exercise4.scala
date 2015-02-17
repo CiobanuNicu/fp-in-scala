@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
 
 object Exercise4 {
   // Generalize tail to the function drop, which removes the first n elements from a list.

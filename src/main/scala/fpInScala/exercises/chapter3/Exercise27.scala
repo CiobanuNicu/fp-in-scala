@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures.{Branch, Leaf, Tree}
+import fpInScala.dataStructures.tree._
 
 object Exercise27 {
   // Write a function depth that returns the maximum path length from the root of a tree to any leaf.

@@ -1,4 +1,7 @@
-package fpInScala.dataStructures
+package fpInScala.dataStructures.either
+
+import fpInScala.dataStructures.list.{Cons, Nil}
+import fpInScala.dataStructures.list
 
 sealed trait Either [+E, +A] {
   def map [B] (f: A => B): Either[E, B] = flatMap(a => Right(f(a)))
@@ -36,9 +39,9 @@ object Either {
     try Right(a)
     catch { case e: Exception => Left(e) }
 
-  def sequence [E, A] (es: List[Either[E, A]]): Either[E, List[A]] = traverse(es)(x => x)
+  def sequence [E, A] (es: list.List[Either[E, A]]): Either[E, list.List[A]] = traverse(es)(x => x)
 
-  def traverse [E, A, B] (as: List[A]) (f: A => Either[E, B]): Either[E, List[B]] = List.foldRight(as, Right(Nil): Either[E, List[B]]) {
+  def traverse [E, A, B] (as: list.List[A]) (f: A => Either[E, B]): Either[E, list.List[B]] = list.List.foldRight(as, Right(Nil): Either[E, list.List[B]]) {
     (a, b) => f(a).map2(b)(Cons(_, _))
   }
 }

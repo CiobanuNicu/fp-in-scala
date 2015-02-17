@@ -1,6 +1,7 @@
 package fpInScala.exercises.chapter4
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
+import fpInScala.dataStructures.either._
 
 object Exercise7 {
   // Implement sequence and traverse for Either.

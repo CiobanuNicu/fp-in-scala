@@ -1,7 +1,8 @@
 package fpInScala.exercises.chapter4
 
+import fpInScala.dataStructures.list._
+import fpInScala.dataStructures.either._
 import org.scalatest.{FlatSpec, ShouldMatchers}
-import fpInScala.dataStructures._
 
 class Exercise7Test extends FlatSpec with ShouldMatchers {
   "Either.sequence(List())" should "return Right(List())" in {

@@ -1,5 +1,6 @@
 package fpInScala.dataStructures
 
+import fpInScala.dataStructures.list._
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{FlatSpec, ShouldMatchers}
 

@@ -1,7 +1,8 @@
 package fpInScala.exercises.chapter4
 
+import fpInScala.dataStructures.list._
+import fpInScala.dataStructures.option._
 import org.scalatest.{FlatSpec, ShouldMatchers}
-import fpInScala.dataStructures._
 
 class Exercise5Test extends FlatSpec with ShouldMatchers {
   val parseInt: String => Option[Int] = (s: String) => try { Some(s.toInt) } catch { case e: Throwable => None }

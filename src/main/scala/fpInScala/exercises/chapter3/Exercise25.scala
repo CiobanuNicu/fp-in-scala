@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.tree._
 
 object Exercise25 {
   // Write a function size that counts the number of nodes (leaves and branches) in a tree.

@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
 
 object Exercise2 {
   // Implement the function tail for removing the first element of a List. Note that the function takes constant time.

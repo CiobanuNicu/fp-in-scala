@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.tree._
 
 object Exercise28 {
   // Write a function map, analogous to the method of the same name on List,

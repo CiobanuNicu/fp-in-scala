@@ -1,7 +1,7 @@
 package fpInScala.exercises.chapter4
 
+import fpInScala.dataStructures.option._
 import org.scalatest.{FlatSpec, ShouldMatchers}
-import fpInScala.dataStructures._
 
 class Exercise2Test extends FlatSpec with ShouldMatchers {
   "An Exercise 4.2 Solution" should "be None for an empty Seq" in {

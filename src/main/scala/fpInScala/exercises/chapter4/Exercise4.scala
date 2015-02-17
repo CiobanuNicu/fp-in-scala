@@ -1,6 +1,7 @@
 package fpInScala.exercises.chapter4
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
+import fpInScala.dataStructures.option._
 
 object Exercise4 {
   // Write a function sequence that combines a list of Options into one Option containing a list of all the Some values

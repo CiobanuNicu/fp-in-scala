@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures.List
+import fpInScala.dataStructures.list.List
 
 object Exercise12 {
   // Write a function that returns the reverse of a list (given List(1,2,3) it returns List(3,2,1)).

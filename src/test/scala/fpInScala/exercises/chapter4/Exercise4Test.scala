@@ -1,7 +1,8 @@
 package fpInScala.exercises.chapter4
 
+import fpInScala.dataStructures.list._
+import fpInScala.dataStructures.option._
 import org.scalatest.{FlatSpec, ShouldMatchers}
-import fpInScala.dataStructures._
 
 class Exercise4Test extends FlatSpec with ShouldMatchers {
   "An Exercise 4.4 Solution" should "return return None if any List element is None" in {

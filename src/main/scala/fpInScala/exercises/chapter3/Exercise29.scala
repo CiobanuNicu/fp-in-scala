@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.tree._
 
 object Exercise29 {
   // Generalize size, maximum, depth, and map, writing a new function fold that abstracts over their similarities.

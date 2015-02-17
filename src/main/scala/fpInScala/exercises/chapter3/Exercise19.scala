@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
 
 object Exercise19 {
   // Write a function filter that removes elements from a list unless they satisfy a given predicate.

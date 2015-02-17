@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
 
 object Exercise5 {
   // Implement dropWhile, which removes elements from the List prefix as long as they match a predicate.

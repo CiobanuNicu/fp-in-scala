@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures.List
+import fpInScala.dataStructures.list.List
 
 object Exercise18 {
   // Write a function map that generalizes modifying each element in a list while maintaining the structure of the list.

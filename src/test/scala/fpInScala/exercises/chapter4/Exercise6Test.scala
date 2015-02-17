@@ -1,7 +1,7 @@
 package fpInScala.exercises.chapter4
 
+import fpInScala.dataStructures.either._
 import org.scalatest.{FlatSpec, ShouldMatchers}
-import fpInScala.dataStructures._
 
 class Exercise6Test extends FlatSpec with ShouldMatchers {
   "Left of anything map f" should "return the same Left" in {

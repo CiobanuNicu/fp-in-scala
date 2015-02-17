@@ -1,7 +1,7 @@
 package fpInScala.exercises.chapter4
 
+import fpInScala.dataStructures.option._
 import org.scalatest.{FlatSpec, ShouldMatchers}
-import fpInScala.dataStructures._
 
 class Exercise3Test extends FlatSpec with ShouldMatchers {
   val plus: (Int, Int) => Int = (a, b) => a + b

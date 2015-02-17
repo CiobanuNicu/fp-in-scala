@@ -1,7 +1,7 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures.List._
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list.List._
+import fpInScala.dataStructures.list._
 
 object Exercise13 {
   // Hard: Can you write foldLeft in terms of foldRight? How about the other way around?

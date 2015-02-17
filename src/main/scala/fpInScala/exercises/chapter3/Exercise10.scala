@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures.List
+import fpInScala.dataStructures.list.List
 
 object Exercise10 {
 

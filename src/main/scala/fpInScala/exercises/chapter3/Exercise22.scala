@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
 
 object Exercise22 {
   // Write a function that accepts two lists and constructs a new list by adding corresponding elements.

@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter4
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.option._
 
 object Exercise2 {
   // Implement the variance function in terms of flatMap. If the mean of a sequence is m, the variance is the mean of

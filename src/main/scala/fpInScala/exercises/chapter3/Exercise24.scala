@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
 
 object Exercise24 {
   // Hard: As an example, implement hasSubsequence for checking whether a List contains another List as a subsequence.

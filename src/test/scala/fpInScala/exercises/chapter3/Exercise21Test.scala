@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
 import org.scalatest.{FlatSpec, ShouldMatchers}
 
 class Exercise21Test extends FlatSpec with ShouldMatchers {

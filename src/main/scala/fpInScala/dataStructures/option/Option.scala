@@ -1,4 +1,7 @@
-package fpInScala.dataStructures
+package fpInScala.dataStructures.option
+
+import fpInScala.dataStructures.list
+import fpInScala.dataStructures.list.{Cons, Nil}
 
 sealed trait Option [+A] {
   def map [B] (f: A => B): Option[B] = this match {
@@ -23,9 +26,9 @@ case object None extends Option[Nothing]
 object Option {
   def map2 [A, B, C] (a: Option[A], b: Option[B]) (f: (A, B) => C): Option[C] = a flatMap(x => b.map(y => f(x, y)))
 
-  def sequence [A] (as: List[Option[A]]): Option[List[A]] = traverse(as)(x => x)
+  def sequence [A] (as: list.List[Option[A]]): Option[list.List[A]] = traverse(as)(x => x)
 
-  def traverse [A, B] (as: List[A]) (f: A => Option[B]): Option[List[B]] = List.foldRight(as, Some(Nil): Option[List[B]]) {
+  def traverse [A, B] (as: list.List[A]) (f: A => Option[B]): Option[list.List[B]] = list.List.foldRight(as, Some(Nil): Option[list.List[B]]) {
     (a, b) => map2(f(a), b)(Cons(_, _))
   }
 }

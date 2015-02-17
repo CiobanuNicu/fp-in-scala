@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
 
 object Exercise6 {
   // Not everything works out so nicely. Implement a function, init, that returns a List consisting of all

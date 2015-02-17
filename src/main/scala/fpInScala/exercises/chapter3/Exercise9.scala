@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures.List
+import fpInScala.dataStructures.list._
 
 object Exercise9 {
   // Compute the length of a list using foldRight.

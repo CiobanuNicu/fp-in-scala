@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter3
 
-import fpInScala.dataStructures.List
+import fpInScala.dataStructures.list.List
 
 object Exercise15 {
   // Hard: Write a function that concatenates a list of lists into a single list. Its runtime should be linear

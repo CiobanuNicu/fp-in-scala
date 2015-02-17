@@ -1,6 +1,6 @@
 package fpInScala.exercises.chapter4
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.option._
 
 object Exercise3 {
   // Write a generic function map2 that combines two Option values using a binary function. If either Option value is

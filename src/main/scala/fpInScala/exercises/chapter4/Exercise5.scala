@@ -1,6 +1,7 @@
 package fpInScala.exercises.chapter4
 
-import fpInScala.dataStructures._
+import fpInScala.dataStructures.list._
+import fpInScala.dataStructures.option._
 
 object Exercise5 {
   // Implement traverse. It's straightforward to do using map and sequence, but try for a more efficient implementation
