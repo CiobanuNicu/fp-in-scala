@@ -5,6 +5,11 @@ sealed trait Stream [+A] {
     case Empty => None
     case Cons(h, t) => Some(h()) // Explicit forcing of the thunk using h()
   }
+
+  def toList: List[A] = this match {
+    case Empty => Nil
+    case Cons(h, t) => h() :: t().toList
+  }
 }
 
 case object Empty extends Stream[Nothing]
