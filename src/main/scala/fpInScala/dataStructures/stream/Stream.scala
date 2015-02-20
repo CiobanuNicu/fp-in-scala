@@ -1,6 +1,8 @@
 package fpInScala.dataStructures.stream
 
 sealed trait Stream [+A] {
+  import Stream._
+
   def headOption: Option[A] = this match {
     case Empty => None
     case Cons(h, t) => Some(h()) // Explicit forcing of the thunk using h()
@@ -9,6 +11,12 @@ sealed trait Stream [+A] {
   def toList: List[A] = this match {
     case Empty => Nil
     case Cons(h, t) => h() :: t().toList
+  }
+
+  def take (n: Int): Stream[A] = this match {
+    case Cons(h, t) if n > 1  => cons(h(), t().take(n - 1))
+    case Cons(h, _) if n == 1 => cons(h(), empty)
+    case _ => empty
   }
 }
 
