@@ -29,6 +29,11 @@ sealed trait Stream [+A] {
     case Cons(_, t) if n == 1 => t()
     case _ => this
   }
+
+  def exists (p: A => Boolean): Boolean = this match {
+    case Cons(h, t) => p(h()) || t().exists(p)
+    case _ => false
+  }
 }
 
 case object Empty extends Stream[Nothing]
