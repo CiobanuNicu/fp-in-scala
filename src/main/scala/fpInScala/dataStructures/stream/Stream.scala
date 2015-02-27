@@ -3,10 +3,7 @@ package fpInScala.dataStructures.stream
 sealed trait Stream [+A] {
   import Stream._
 
-  def headOption: Option[A] = this match {
-    case Empty => None
-    case Cons(h, t) => Some(h()) // Explicit forcing of the thunk using h()
-  }
+  def headOption: Option[A] = foldRight (None: Option[A]) ((a, b) => Some(a))
 
   def toList: List[A] = this match {
     case Empty => Nil
