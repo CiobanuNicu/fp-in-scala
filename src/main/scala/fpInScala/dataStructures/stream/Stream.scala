@@ -68,5 +68,7 @@ object Stream {
 
   // A convenient variable-argument method for constructing a Stream from multiple elements
   def apply [A] (as: A*): Stream[A] = if (as.isEmpty) empty else cons(as.head, apply(as.tail: _*))
+
+  def constant [A] (a: A): Stream[A] = cons(a, constant(a))
 }
 
