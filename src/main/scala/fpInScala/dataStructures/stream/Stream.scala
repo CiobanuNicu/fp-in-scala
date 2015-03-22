@@ -44,6 +44,12 @@ sealed trait Stream [+A] {
   def flatMap [B] (f: A => Stream[B]): Stream[B] = foldRight (empty[B]) ((a, b) => f(a).append(b))
 
   def find (p: A => Boolean): Option[A] = filter(p).headOption
+
+  def zipWith [B, C] (s: Stream[B]) (f: (A, B) => C): Stream[C] = unfold ((this, s)) {
+    case (Cons(h1, t1), Cons(h2, t2)) => Some(f(h1(), h2()), (t1(), t2()))
+    case (Empty, _) => None
+    case (_, Empty) => None
+  }
 }
 
 case object Empty extends Stream[Nothing]
