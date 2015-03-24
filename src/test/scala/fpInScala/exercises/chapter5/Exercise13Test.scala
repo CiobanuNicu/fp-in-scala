@@ -20,4 +20,16 @@ class Exercise13Test extends FlatSpec with ShouldMatchers {
     Stream(1, 3, 5).zipWith(Stream(7, 9, 11, 13))(_ + _).toList should be (List(8, 12, 16))
     Stream(1, 3, 5, 7).zipWith(Stream(7, 9, 11))(_ + _).toList should be (List(8, 12, 16))
   }
+
+  "Stream.mapViaUnfold" should "have no effect on an empty stream" in {
+    Stream[Int]().mapViaUnfold(x => x * 2).toList should be (List())
+  }
+
+  it should "transform a stream of strings into a stream of integers given a function from String to Int" in {
+    Stream("1", "2", "3", "4", "5", "6").mapViaUnfold(_.toInt).toList should be (List(1, 2, 3, 4, 5, 6))
+  }
+
+  it should "transform a stream of integers into a stream of different integers given a function from Int to Int" in {
+    Stream(1, 2, 3, 4, 5).mapViaUnfold(_ + 1).toList should be (List(2, 3, 4, 5, 6))
+  }
 }
