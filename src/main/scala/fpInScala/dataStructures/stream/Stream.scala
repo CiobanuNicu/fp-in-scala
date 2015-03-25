@@ -16,6 +16,11 @@ sealed trait Stream [+A] {
     case _ => empty
   }
 
+  def takeViaUnfold (n: Int): Stream[A] = unfold ((this, n)) {
+    case (Cons(h, t), x) if x >= 1 => Some(h(), (t(), x - 1))
+    case _ => None
+  }
+
   def takeWhile (p: A => Boolean): Stream[A] = foldRight (empty[A]) {
     (h, t) => if (p(h)) cons(h, t) else empty
   }

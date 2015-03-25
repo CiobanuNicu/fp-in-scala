@@ -32,4 +32,21 @@ class Exercise13Test extends FlatSpec with ShouldMatchers {
   it should "transform a stream of integers into a stream of different integers given a function from Int to Int" in {
     Stream(1, 2, 3, 4, 5).mapViaUnfold(_ + 1).toList should be (List(2, 3, 4, 5, 6))
   }
+
+  "Stream.takeViaUnfold(n)" should "return an empty Stream if n is less than or equal to 0" in {
+    Stream(1, 2, 3).takeViaUnfold(0).toList should be (List())
+    Stream(1, 2, 3).takeViaUnfold(-5).toList should be (List())
+  }
+
+  it should "return the first element only if n is equal to 1" in {
+    Stream(1, 2, 3).takeViaUnfold(1).toList should be (List(1))
+  }
+
+  it should "return as many elements as were taken in a new stream if n is greater than 1" in {
+    Stream(1, 2, 3, 4, 5, 6).takeViaUnfold(3).toList should be (List(1, 2, 3))
+  }
+
+  it should "return the entire stream if more than its length was taken" in {
+    Stream(1, 2, 3, 4, 5).takeViaUnfold(27).toList should be (List(1, 2, 3, 4, 5))
+  }
 }
