@@ -25,6 +25,11 @@ sealed trait Stream [+A] {
     (h, t) => if (p(h)) cons(h, t) else empty
   }
 
+  def takeWhileViaUnfold (p: A => Boolean): Stream[A] = unfold (this) {
+    case Cons(h, t) if p(h()) => Some(h(), t())
+    case _ => None
+  }
+
   def drop (n: Int): Stream[A] = this match {
     case Cons(_, t) if n > 1  => t().drop(n - 1)
     case Cons(_, t) if n == 1 => t()

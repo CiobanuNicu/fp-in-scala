@@ -49,4 +49,17 @@ class Exercise13Test extends FlatSpec with ShouldMatchers {
   it should "return the entire stream if more than its length was taken" in {
     Stream(1, 2, 3, 4, 5).takeViaUnfold(27).toList should be (List(1, 2, 3, 4, 5))
   }
+
+  "Stream.takeWhileViaUnfold(p: A => Boolean)" should "return the empty stream when the predicate is always false" in {
+    Stream(1, 2, 3).takeWhileViaUnfold(x => false).toList should be (List())
+  }
+
+  it should "return the stream itself when the predicate is always true" in {
+    Stream(4, 5, 6, 7, 8, 9, 10).takeWhileViaUnfold(x => true).toList should be (List(4, 5, 6, 7, 8, 9, 10))
+  }
+
+  it should "return the portions of the stream that satisfied the predicate if they don't all do" in {
+    val dividesBy3: (Int) => Boolean = x => x % 3 == 0
+    Stream(3, 6, 9, 12, 15, 20, 30, 40).takeWhileViaUnfold(dividesBy3).toList should be (List(3, 6, 9, 12, 15))
+  }
 }
