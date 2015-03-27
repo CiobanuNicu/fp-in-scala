@@ -62,4 +62,63 @@ class Exercise13Test extends FlatSpec with ShouldMatchers {
     val dividesBy3: (Int) => Boolean = x => x % 3 == 0
     Stream(3, 6, 9, 12, 15, 20, 30, 40).takeWhileViaUnfold(dividesBy3).toList should be (List(3, 6, 9, 12, 15))
   }
+
+  "Stream.zipAll" should "return an empty stream when an empty stream is zipped all with an empty stream" in {
+    Stream.empty[Int].zipAll(Stream.empty[String]).toList should be (List())
+  }
+
+  it should "return a stream of pairs of the elements of 2 equally-long non-empty streams" in {
+    Stream('a', 'b', 'c').zipAll(Stream(1, 2, 3)).toList should be (
+      List(
+        (Some('a'), Some(1)),
+        (Some('b'), Some(2)),
+        (Some('c'), Some(3))
+      )
+    )
+  }
+
+  it should "return a stream of pairs of elements from both streams when zipped with a shorter stream and substitute None when the shorter stream runs out" in {
+    Stream('a', 'b', 'c', 'd').zipAll(Stream(1, 2, 3)).toList should be (
+      List(
+        (Some('a'), Some(1)),
+        (Some('b'), Some(2)),
+        (Some('c'), Some(3)),
+        (Some('d'), None)
+      )
+    )
+  }
+
+  it should "return a stream of pairs of elements from both streams when zipped with a longer stream and substitute None when the shorter stream runs out" in {
+    Stream('a', 'b', 'c').zipAll(Stream(1, 2, 3, 4)).toList should be (
+      List(
+        (Some('a'), Some(1)),
+        (Some('b'), Some(2)),
+        (Some('c'), Some(3)),
+        (None,      Some(4))
+      )
+    )
+  }
+
+  it should "return a stream of pairs of None and the elements of the other stream when an empty stream is zipped all with a non-empty stream" in {
+    Stream.empty[Int].zipAll(Stream('a', 'b', 'c', 'd')).toList should be (
+      List(
+        (None, Some('a')),
+        (None, Some('b')),
+        (None, Some('c')),
+        (None, Some('d'))
+      )
+    )
+  }
+
+  it should "return a stream of pairs of its elements and None with a non-empty stream is zipped all with an empty stream" in {
+    Stream(1, 2, 3, 4, 5).zipAll(Stream.empty[String]).toList should be (
+      List(
+        (Some(1), None),
+        (Some(2), None),
+        (Some(3), None),
+        (Some(4), None),
+        (Some(5), None)
+      )
+    )
+  }
 }
