@@ -73,11 +73,10 @@ sealed trait Stream [+A] {
     case (Empty, Empty) => None
   }
 
-  def startsWith [B >: A] (s: Stream[B]): Boolean = (this, s) match {
-    case (_, Empty) => true
-    case (Cons(h1, t1), Cons(h2, t2)) if h1() == h2() => t1() startsWith t2()
-    case _ => false
-  }
+  def startsWith [B >: A] (s: Stream[B]): Boolean =
+    zipAll(s) takeWhile (_._2.isDefined) forAll {
+      case (a, b) => a == b
+    }
 }
 
 case object Empty extends Stream[Nothing]
