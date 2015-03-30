@@ -78,10 +78,10 @@ sealed trait Stream [+A] {
       case (a, b) => a == b
     }
 
-  def tails: Stream[Stream[A]] = this match {
-    case Empty => Stream(this)
-    case Cons(h, t) => Cons(() => this, () => t().tails)
-  }
+  def tails: Stream[Stream[A]] = unfold (this) {
+    case Empty => None
+    case s => Some(s, s drop 1)
+  } append Stream(empty)
 }
 
 case object Empty extends Stream[Nothing]
