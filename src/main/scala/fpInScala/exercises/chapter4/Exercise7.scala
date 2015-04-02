@@ -5,7 +5,7 @@ import fpInScala.dataStructures.either._
 
 object Exercise7 {
   // Implement sequence and traverse for Either.
-  // These should return the first error that’s encountered, if there is one.
+  // These should return the first error that's encountered, if there is one.
 
   // Defer to the implementations on Either
   def sequence [E, A] (es: List[Either[E, A]]): Either[E, List[A]] = Either.sequence(es)
