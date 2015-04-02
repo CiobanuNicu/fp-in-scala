@@ -78,6 +78,12 @@ sealed trait Stream [+A] {
       case (a, b) => a == b
     }
 
+  def scanRight [B] (z: B) (f: (A, => B) => B): Stream[B] = foldRight ((z, Stream(z))) ((valueA, stateSoFar) => {
+    lazy val (valueB, streamSoFar) = stateSoFar
+    val nextValue = f(valueA, valueB)
+    (nextValue, cons(nextValue, streamSoFar))
+  })._2
+
   def tails: Stream[Stream[A]] = unfold (this) {
     case Empty => None
     case s => Some(s, s drop 1)
