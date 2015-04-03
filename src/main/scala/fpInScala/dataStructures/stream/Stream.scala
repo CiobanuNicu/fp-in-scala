@@ -84,10 +84,7 @@ sealed trait Stream [+A] {
     (nextValue, cons(nextValue, streamSoFar))
   })._2
 
-  def tails: Stream[Stream[A]] = unfold (this) {
-    case Empty => None
-    case s => Some(s, s drop 1)
-  } append Stream(empty)
+  def tails: Stream[Stream[A]] = scanRight (empty[A]) ((a, b) => cons(a, b))
 
   def hasSubsequence [A] (s: Stream[A]): Boolean = tails exists (_ startsWith s)
 }
