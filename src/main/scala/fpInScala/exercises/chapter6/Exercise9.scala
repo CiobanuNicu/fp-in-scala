@@ -17,4 +17,14 @@ object Exercise9 {
   def map [A, B] (s: Rand[A]) (f: A => B): Rand[B] = flatMap(s)(a => unit(f(a)))
 
   def double: Rand[Double] = map(Exercise1.nonNegativeInt)(_ / (Int.MaxValue.toDouble + 1))
+
+  def map2 [A, B, C] (ra: Rand[A], rb: Rand[B]) (f: (A, B) => C): Rand[C] = flatMap(ra)(a => map(rb)(b => f(a, b)))
+
+  def sequence [A] (fs: List[Rand[A]]): Rand[List[A]] = {
+    fs.foldRight(unit(List[A]())) {
+      (a, b) => map2(a, b)(_ :: _)
+    }
+  }
+
+  def ints (count: Int): Rand[List[Int]] = sequence(List.fill(count)(r => Exercise1.nonNegativeInt(r)))
 }
