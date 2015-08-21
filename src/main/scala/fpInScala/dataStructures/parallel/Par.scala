@@ -92,4 +92,8 @@ object Par {
       val (l, r) = ints.splitAt(ints.length / 2)
       Par.map2(Par.fork(sum(l)), Par.fork(sum(r))) (_ + _)
     }
+
+  // This API already enables a rich set of operations. Here's a simple example: using lazyUnit,
+  // write a function to convert any function A => B to one that evaluates its result asynchronously.
+  def asyncF [A, B] (f: A => B): A => Par[B] = a => lazyUnit(f(a))
 }
