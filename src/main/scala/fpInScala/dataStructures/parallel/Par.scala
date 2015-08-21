@@ -64,6 +64,10 @@ object Par {
 
   }
 
+  // We can "lift" any function of type A => B to become a function that takes Par[A] and returns Par[B];
+  // we can map any function over a Par:
+  def map [A, B] (a: Par[A]) (f: A => B): Par[B] = map2(a, unit(())) ((a,_) => f(a))
+
   // Marks a computation for concurrent evaluation by run.
   // The evaluation won’t actually occur until forced by run.
   // This is the simplest and most natural implementation of fork, but there are some problems with it --
