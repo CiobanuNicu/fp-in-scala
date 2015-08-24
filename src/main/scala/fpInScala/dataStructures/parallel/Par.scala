@@ -70,7 +70,8 @@ object Par {
 
   def parMap [A, B] (ps: List[A]) (f: A => B): Par[List[B]] = sequence(ps.map(asyncF(f)))
 
-  def sequence [A] (ps: List[Par[A]]): Par[List[A]] = ???
+  // Hard: Write this function, called sequence. No additional primitives are required. Do not call run.
+  def sequence [A] (ps: List[Par[A]]): Par[List[A]] = ps.foldRight[Par[List[A]]] (unit(Nil)) ((h, t) => map2(h, t)(_ :: _))
 
   // Marks a computation for concurrent evaluation by run.
   // The evaluation won’t actually occur until forced by run.
