@@ -88,6 +88,12 @@ object Par {
   // later on.
   def fork [A] (a: => Par[A]): Par[A] = es => es.submit(new Callable [A] { def call (): A = a(es).get })
 
+  // For working on fixed-size threadpools, this certainly avoids deadlock. The only problem is that we aren't actually
+  // forking a separate logical thread to evaluate fa. So delay(hugeComputation)(es) for some ExecutorService es, would
+  // run hugeComputation in the main thread, which is exactly what we wanted to avoid. This is still a useful
+  // combinator, though, since it lets us delay instantiation of a computation until it's actually needed.
+  def delay [A] (fa: => Par[A]): Par[A] = es => fa(es)
+
   // Wraps its unevaluated argument in a Par and marks it for concurrent evaluation by run
   def lazyUnit [A] (a: => A): Par[A] = fork(unit(a))
 
