@@ -1,8 +1,13 @@
 package fpInScala.dataStructures.parallel
 
-import java.util.concurrent.{Callable, TimeUnit, Future, ExecutorService}
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.{CountDownLatch, Callable, ExecutorService}
 
 object Par {
+  sealed trait Future [A] {
+    private[parallel] def apply (k: A => Unit): Unit
+  }
+
   // The simplest possible model for Par[A] might be ExecutorService => A.
   // This would obviously make run trivial to implement. But it might be nice
   // to defer the decision of how long to wait for a computation, or whether
@@ -10,59 +15,42 @@ object Par {
   // and run simple returns the Future:
   type Par[A] = ExecutorService => Future[A]
 
-  // Creates a computation that immediately results in the value a,
-  // promoting a constant value to a parallel computation.
-  // Unit is represented as a function that returns a UnitFuture, which
-  // is a simple implementation of Future that just wraps a constant
-  // value. It doesn't use the ExecutorService at all. It's always done
-  // and can't be canceled. Its get method simply returns the value we gave it.
-  def unit [A] (a: A): Par[A] = (es: ExecutorService) => UnitFuture(a)
+  // Simply passes the value to the continuation. Note that ExecutorService isn't needed.
+  def unit [A] (a: A): Par[A] = es => new Future[A] { def apply (cb: A => Unit): Unit = cb(a) }
 
-  private case class UnitFuture [A] (get: A) extends Future[A] {
-    def isDone: Boolean = true
-    def get (timeout: Long, unit: TimeUnit): A = get
-    def isCancelled: Boolean = false
-    def cancel (mayInterruptIfRunning: Boolean): Boolean = false
-  }
+  // We can now implement map2 using an Actor to collect the result from both arguments. The code is straightforward,
+  // and there are no race conditions to worry about, since we know
+  // that the Actor will only process one message at a time.
+  def map2 [A, B, C] (p1: Par[A], p2: Par[B]) (f: (A, B) => C): Par[C] =
+    es => new Future[C] {
+      def apply (cb: (C) => Unit): Unit = {
+        var ar: Option[A] = None
+        var br: Option[B] = None
 
-  // Combines the result of two parallel computations with a binary function
-  // Here, map2 doesn't evaluate the call to f in a separate logical thread,
-  // in accord with out design choice of having fork be the sole function in
-  // the API for controlling parallelism. We can always do fork(map2(a,b)(f))
-  // if we want the evaluation of f to occur in a separate thread
-  def map2 [A, B, C] (a: Par[A], b: Par[B]) (f: (A, B) => C): Par[C] =
-    (es: ExecutorService) => {
-      val (af, bf) = (a(es), b(es))
-      Map2Future(af, bf, f)
+        // An actor that awaits both results, combines them with f, and passes the result to cb.
+        val combiner = Actor[Either[A, B]] (es) {
+          // If the A result came in first, stores it in ar and waits for the B. If the A result came last and we
+          // already have our B, calls f with both results and passes the resulting C to the callback, cb
+          case Left(a) => br match {
+            case None => ar = Some(a)
+            case Some(b) => eval(es) (cb(f(a, b)))
+          }
+
+          // Analogously, if the B result came in first, stores it in br and waits for the A. If the B result came
+          // last and we already have our A, calls f with both results and passes the resulting C to the callback, cb.
+          case Right(b) => ar match {
+            case None => br = Some(b)
+            case Some(a) => eval(es) (cb(f(a, b)))
+          }
+        }
+
+        // Passes the actor as a continuation to both sides. On the A side, we wrap the result in Left, and on the B
+        // side, we wrap it in Right. These are the constructors of the Either data type, and they serve to indicate
+        // to the actor where the result came from.
+        p1(es)(a => combiner ! Left(a))
+        p2(es)(b => combiner ! Right(b))
+      }
     }
-
-  case class Map2Future [A, B, C] (a: Future[A], b: Future[B], f: (A, B) => C) extends Future[C] {
-    @volatile var cache: Option[C] = None
-
-    def isDone: Boolean = cache.isDefined
-    def isCancelled: Boolean = a.isCancelled || b.isCancelled
-
-    def cancel (mayInterruptIfRunning: Boolean): Boolean = a.cancel(mayInterruptIfRunning) || b.cancel(mayInterruptIfRunning)
-
-    def get (): C = compute(Long.MaxValue)
-    def get (timeout: Long, unit: TimeUnit): C = compute(TimeUnit.NANOSECONDS.convert(timeout, unit))
-
-    private def compute (timeoutInNanoseconds: Long): C = cache match {
-      case Some(c) => c
-      case None =>
-        val start = System.nanoTime
-        val ar = a.get(timeoutInNanoseconds, TimeUnit.NANOSECONDS)
-        val stop = System.nanoTime
-
-        val aTime = stop - start
-        val br = b.get(timeoutInNanoseconds - aTime, TimeUnit.NANOSECONDS)
-        val ret = f(ar, br)
-
-        cache = Some(ret)
-        ret
-    }
-
-  }
 
   // We can "lift" any function of type A => B to become a function that takes Par[A] and returns Par[B];
   // we can map any function over a Par:
@@ -78,15 +66,15 @@ object Par {
   // Hard: Write this function, called sequence. No additional primitives are required. Do not call run.
   def sequence [A] (ps: List[Par[A]]): Par[List[A]] = ps.foldRight[Par[List[A]]] (unit(Nil)) ((h, t) => map2(h, t)(_ :: _))
 
-  // Marks a computation for concurrent evaluation by run.
-  // The evaluation won’t actually occur until forced by run.
-  // This is the simplest and most natural implementation of fork, but there are some problems with it --
-  // for one, the outer Callable will block waiting for the "inner" task to complete. Since this blocking
-  // occupies a thread in our thread pool, or whatever resource backs the ExecutorService, this implies
-  // that we're losing out on some potential parallelism. Essentially, we're using two threads when one
-  // should suffice. This is a symptom of a more serious problem with the implementation that we'll discuss
-  // later on.
-  def fork [A] (a: => Par[A]): Par[A] = es => es.submit(new Callable [A] { def call (): A = a(es).get })
+  // Eval forks off evaluation of a and returns immediately.
+  // The callback will be invoked asynchronously on another thread.
+  def fork [A] (a: => Par[A]): Par[A] = es => new Future[A] {
+    def apply (cb: A => Unit): Unit =
+      eval(es) (a(es)(cb))
+  }
+
+  // A helper function to evaluate an action asynchronously using some ExecutorService
+  def eval (es: ExecutorService) (r: => Unit): Unit = es.submit(new Callable[Unit] { def call = r })
 
   // For working on fixed-size threadpools, this certainly avoids deadlock. The only problem is that we aren't actually
   // forking a separate logical thread to evaluate fa. So delay(hugeComputation)(es) for some ExecutorService es, would
@@ -97,13 +85,13 @@ object Par {
   // Wraps its unevaluated argument in a Par and marks it for concurrent evaluation by run
   def lazyUnit [A] (a: => A): Par[A] = fork(unit(a))
 
-  // Fully evaluates a given Par, spawning parallel computations
-  // as requested by fork and extracting the resulting value.
-  // Note that since Par is represented as a function that needs an ExecutorService,
-  // the creation of the Future doesn't actually happen until this ExecutorService is
-  // provided. Is it really that simple? Let's assume it is for now, and revise our model
-  // if we find it doesn't allow some functionality we'd like.
-  def run [A] (es: ExecutorService) (a: Par[A]): Future[A] = a(es)
+  def run [A] (es: ExecutorService) (p: Par[A]): A = {
+    val ref = new AtomicReference[A]
+    val latch = new CountDownLatch(1)
+    p(es) { a => ref.set(a); latch.countDown() }
+    latch.await()
+    ref.get
+  }
 
   def sum (ints: IndexedSeq[Int]): Par[Int] =
     if (ints.size <= 1) {
