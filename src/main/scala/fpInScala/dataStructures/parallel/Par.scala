@@ -5,7 +5,7 @@ import java.util.concurrent.{CountDownLatch, Callable, ExecutorService}
 
 object Par {
   sealed trait Future [A] {
-    private[parallel] def apply (k: A => Unit): Unit
+    private[parallel] def apply (onNext: A => Unit): Unit
   }
 
   // The simplest possible model for Par[A] might be ExecutorService => A.
@@ -16,31 +16,34 @@ object Par {
   type Par[A] = ExecutorService => Future[A]
 
   // Simply passes the value to the continuation. Note that ExecutorService isn't needed.
-  def unit [A] (a: A): Par[A] = es => new Future[A] { def apply (cb: A => Unit): Unit = cb(a) }
+  def unit [A] (a: A): Par[A] = es => new Future[A] {
+    def apply (onNext: A => Unit): Unit = onNext(a)
+  }
 
   // We can now implement map2 using an Actor to collect the result from both arguments. The code is straightforward,
   // and there are no race conditions to worry about, since we know
   // that the Actor will only process one message at a time.
   def map2 [A, B, C] (p1: Par[A], p2: Par[B]) (f: (A, B) => C): Par[C] =
     es => new Future[C] {
-      def apply (cb: (C) => Unit): Unit = {
+      def apply (onNext: (C) => Unit): Unit = {
         var ar: Option[A] = None
         var br: Option[B] = None
 
-        // An actor that awaits both results, combines them with f, and passes the result to cb.
+        // An actor that awaits both results, combines them with f, and passes the result to onNext.
         val combiner = Actor[Either[A, B]] (es) {
           // If the A result came in first, stores it in ar and waits for the B. If the A result came last and we
-          // already have our B, calls f with both results and passes the resulting C to the callback, cb
+          // already have our B, calls f with both results and passes the resulting C to the callback, onNext
           case Left(a) => br match {
             case None => ar = Some(a)
-            case Some(b) => eval(es) (cb(f(a, b)))
+            case Some(b) => eval(es) (onNext(f(a, b)))
           }
 
           // Analogously, if the B result came in first, stores it in br and waits for the A. If the B result came
-          // last and we already have our A, calls f with both results and passes the resulting C to the callback, cb.
+          // last and we already have our A, calls f with both results and passes the resulting C to the callback,
+          // onNext.
           case Right(b) => ar match {
             case None => br = Some(b)
-            case Some(a) => eval(es) (cb(f(a, b)))
+            case Some(a) => eval(es) (onNext(f(a, b)))
           }
         }
 
@@ -69,8 +72,8 @@ object Par {
   // Eval forks off evaluation of a and returns immediately.
   // The callback will be invoked asynchronously on another thread.
   def fork [A] (a: => Par[A]): Par[A] = es => new Future[A] {
-    def apply (cb: A => Unit): Unit =
-      eval(es) (a(es)(cb))
+    def apply (onNext: A => Unit): Unit =
+      eval(es) (a(es)(onNext))
   }
 
   // A helper function to evaluate an action asynchronously using some ExecutorService
