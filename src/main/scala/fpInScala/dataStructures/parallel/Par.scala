@@ -5,7 +5,7 @@ import java.util.concurrent.{CountDownLatch, Callable, ExecutorService}
 
 object Par {
   sealed trait Future [A] {
-    private[parallel] def apply (onNext: A => Unit): Unit
+    private[parallel] def apply (onNext: A => Unit, onError: Throwable => Unit): Unit
   }
 
   // The simplest possible model for Par[A] might be ExecutorService => A.
@@ -17,7 +17,7 @@ object Par {
 
   // Simply passes the value to the continuation. Note that ExecutorService isn't needed.
   def unit [A] (a: A): Par[A] = es => new Future[A] {
-    def apply (onNext: A => Unit): Unit = onNext(a)
+    def apply (onNext: A => Unit, onError: Throwable => Unit = throw _): Unit = onNext(a)
   }
 
   // We can now implement map2 using an Actor to collect the result from both arguments. The code is straightforward,
@@ -25,7 +25,7 @@ object Par {
   // that the Actor will only process one message at a time.
   def map2 [A, B, C] (p1: Par[A], p2: Par[B]) (f: (A, B) => C): Par[C] =
     es => new Future[C] {
-      def apply (onNext: (C) => Unit): Unit = {
+      def apply (onNext: (C) => Unit, onError: Throwable => Unit): Unit = {
         var ar: Option[A] = None
         var br: Option[B] = None
 
@@ -50,8 +50,8 @@ object Par {
         // Passes the actor as a continuation to both sides. On the A side, we wrap the result in Left, and on the B
         // side, we wrap it in Right. These are the constructors of the Either data type, and they serve to indicate
         // to the actor where the result came from.
-        p1(es)(a => combiner ! Left(a))
-        p2(es)(b => combiner ! Right(b))
+        p1(es)(a => combiner ! Left(a), onError)
+        p2(es)(b => combiner ! Right(b), onError)
       }
     }
 
@@ -72,8 +72,8 @@ object Par {
   // Eval forks off evaluation of a and returns immediately.
   // The callback will be invoked asynchronously on another thread.
   def fork [A] (a: => Par[A]): Par[A] = es => new Future[A] {
-    def apply (onNext: A => Unit): Unit =
-      eval(es) (a(es)(onNext))
+    def apply (onNext: A => Unit, onError: Throwable => Unit = throw _): Unit =
+      eval(es) (a(es)(onNext, onError))
   }
 
   // A helper function to evaluate an action asynchronously using some ExecutorService
@@ -91,7 +91,7 @@ object Par {
   def run [A] (es: ExecutorService) (p: Par[A]): A = {
     val ref = new AtomicReference[A]
     val latch = new CountDownLatch(1)
-    p(es) { a => ref.set(a); latch.countDown() }
+    p(es)({ a => ref.set(a); latch.countDown() }, { e => latch.countDown(); throw e })
     latch.await()
     ref.get
   }
