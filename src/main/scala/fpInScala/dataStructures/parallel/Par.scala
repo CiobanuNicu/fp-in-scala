@@ -107,4 +107,10 @@ object Par {
   // This API already enables a rich set of operations. Here's a simple example: using lazyUnit,
   // write a function to convert any function A => B to one that evaluates its result asynchronously.
   def asyncF [A, B] (f: A => B): A => Par[B] = a => lazyUnit(f(a))
+
+  // Suppose we want a function to choose between two forking computations based on the result of an initial computation:
+  def choice [A] (cond: Par[Boolean]) (t: Par[A], f: Par[A]): Par[A] =
+    es =>
+      if (run(es)(cond)) t(es) // Notice we are blocking on the result of cond.
+      else f(es)
 }
