@@ -108,9 +108,10 @@ object Par {
   // write a function to convert any function A => B to one that evaluates its result asynchronously.
   def asyncF [A, B] (f: A => B): A => Par[B] = a => lazyUnit(f(a))
 
-  // Suppose we want a function to choose between two forking computations based on the result of an initial computation:
-  def choice [A] (cond: Par[Boolean]) (t: Par[A], f: Par[A]): Par[A] =
-    es =>
-      if (run(es)(cond)) t(es) // Notice we are blocking on the result of cond.
-      else f(es)
+  // Why just two? If it's useful to be able to choose between two parallel computations based on the results
+  // of a first, it should be certainly be useful to choose between N computations:
+  def choiceN [A] (n: Par[Int]) (choices: List[Par[A]]): Par[A] = es => choices(run(es)(n))(es)
+
+  // Re-implemented in terms of choiceN
+  def choice [A] (cond: Par[Boolean]) (t: Par[A], f: Par[A]): Par[A] = choiceN(map(cond)(c => if (c) 0 else 1)) (List(t, f))
 }
