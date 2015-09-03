@@ -110,10 +110,19 @@ object Par {
 
   // Why just two? If it's useful to be able to choose between two parallel computations based on the results
   // of a first, it should be certainly be useful to choose between N computations:
-  def choiceN [A] (n: Par[Int]) (choices: List[Par[A]]): Par[A] = es => choices(run(es)(n))(es)
+  def choiceN [A] (n: Par[Int]) (choices: List[Par[A]]): Par[A] = chooser(n)(choices(_))
 
-  // Re-implemented in terms of choiceN
-  def choice [A] (cond: Par[Boolean]) (t: Par[A], f: Par[A]): Par[A] = choiceN(map(cond)(c => if (c) 0 else 1)) (List(t, f))
+  // Re-implemented in terms of chooser
+  def choice [A] (cond: Par[Boolean]) (t: Par[A], f: Par[A]): Par[A] = chooser(cond)(if (_) t else f)
 
-  def choiceMap [K, V] (key: Par[K]) (choices: Map[K, Par[V]]): Par[V] = es => choices(run(es)(key))(es)
+  // The Map encoding of the set of possible choices feels overly specific, just like List. If we look at
+  // our implementation of choiceMap, we can see we aren't really using much of the API of Map. Really,
+  // the Map[A, Par[B]] is used to provide a function, A => Par[B]. And now that we've spotted that, looking back
+  // at choice and choiceN, we can see that for choice, the pair of arguments was just being used as a function
+  // of type Boolean => Par[A] (where the Boolean selects one of the two Par[A] arguments), and for choiceN
+  // the list was just being used as a function of type Int => Par[A]!
+  // Let's make a more general signature that unifies them all:
+
+  // Implement this new primitive chooser, and then use it to implement choice and choiceN.
+  def chooser [A, B] (pa: Par[A]) (choices: A => Par[B]): Par[B] = es => choices(run(es)(pa))(es)
 }
