@@ -125,4 +125,10 @@ object Par {
 
   // Implement this new primitive flatMap, and then use it to implement choice and choiceN.
   def flatMap [A, B] (pa: Par[A]) (choices: A => Par[B]): Par[B] = es => choices(run(es)(pa))(es)
+
+  def join [A] (a: Par[Par[A]]): Par[A] = es => run(es)(a)(es)
+
+  def flatMapViaJoin [A, B] (pa: Par[A]) (choices: A => Par[B]): Par[B] = join(map(pa)(choices))
+
+  def joinViaFlatMap [A] (a: Par[Par[A]]): Par[A] = flatMap(a)(identity)
 }
