@@ -5,3 +5,11 @@ package fpInScala.purelyFunctionalState
 trait RNG {
   def nextInt: (Int, RNG)
 }
+
+object RNG {
+  def nonNegativeInt (rng: RNG): (Int, RNG) = {
+    val (posOrNeg, nextRng) = rng.nextInt
+    val nextNonNegative = if (posOrNeg < 0) Math.abs(posOrNeg + 1) else posOrNeg
+    (nextNonNegative, nextRng)
+  }
+}

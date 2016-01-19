@@ -1,0 +1,12 @@
+package fpInScala.testing
+
+import fpInScala.dataStructures.state.State
+import fpInScala.purelyFunctionalState.RNG
+
+case class Gen [A] (sample: State[RNG, A])
+
+object Gen {
+  def choose (start: Int, stopExclusive: Int): Gen[Int] = Gen {
+    State { RNG.nonNegativeInt } map (n => start + n % (stopExclusive - start))
+  }
+}
