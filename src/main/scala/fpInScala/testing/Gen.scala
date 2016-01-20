@@ -13,4 +13,6 @@ object Gen {
   def unit [A] (a: => A): Gen[A] = Gen {
     State.unit(a)
   }
+
+  def boolean: Gen[Boolean] = Gen { State { RNG.boolean } }
 }
