@@ -9,4 +9,8 @@ object Gen {
   def choose (start: Int, stopExclusive: Int): Gen[Int] = Gen {
     State { RNG.nonNegativeInt } map (n => start + n % (stopExclusive - start))
   }
+
+  def unit [A] (a: => A): Gen[A] = Gen {
+    State.unit(a)
+  }
 }
