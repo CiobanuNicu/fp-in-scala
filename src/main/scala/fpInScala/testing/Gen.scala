@@ -3,7 +3,11 @@ package fpInScala.testing
 import fpInScala.dataStructures.state.State
 import fpInScala.purelyFunctionalState.RNG
 
-case class Gen [A] (sample: State[RNG, A])
+case class Gen [A] (sample: State[RNG, A]) {
+  def flatMap [B] (f: A => Gen[B]): Gen[B] = Gen {
+    sample.flatMap(a => f(a).sample)
+  }
+}
 
 object Gen {
   def choose (start: Int, stopExclusive: Int): Gen[Int] = Gen {
