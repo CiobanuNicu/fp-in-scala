@@ -23,4 +23,6 @@ object Gen {
   def boolean: Gen[Boolean] = Gen { State { RNG.boolean } }
 
   def listOfN [A] (n: Int, g: Gen[A]): Gen[List[A]] = Gen { State.sequence { List.fill(n)(g.sample) } }
+
+  def union [A] (g1: Gen[A], g2: Gen[A]): Gen[A] = boolean flatMap { if (_) g1 else g2 }
 }
