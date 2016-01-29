@@ -4,7 +4,28 @@ import fpInScala.testing.Prop._
 import fpInScala.purelyFunctionalState.RNG
 import fpInScala.dataStructures.stream.Stream
 
-case class Prop (run: (TestCases, RNG) => Result)
+case class Prop (run: (TestCases, RNG) => Result) {
+  def && (p: Prop): Prop = Prop {
+    (testCases, rng) => run(testCases, rng) match {
+      case Passed => p.run(testCases, rng)
+      case f: Falsified => f
+    }
+  }
+
+  def || (p: Prop): Prop = Prop {
+    (testCases, rng) => run(testCases, rng) match {
+      case Falsified(failedCase, successes) => p.label(failedCase).run(testCases, rng)
+      case p => p
+    }
+  }
+
+  def label (tag: String): Prop = Prop {
+    (testCases, rng) => run(testCases, rng) match {
+      case Falsified(failedCase, successes) => Falsified(s"$tag\n$failedCase", successes)
+      case p => p
+    }
+  }
+}
 
 object Prop {
   type FailedCase = String
