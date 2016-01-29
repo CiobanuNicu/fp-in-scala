@@ -4,6 +4,8 @@ import fpInScala.dataStructures.state.State
 import fpInScala.purelyFunctionalState.RNG
 
 case class Gen [A] (sample: State[RNG, A]) {
+  def unsized: SGen[A] = SGen(_ => this)
+
   def flatMap [B] (f: A => Gen[B]): Gen[B] = Gen {
     sample.flatMap(a => f(a).sample)
   }
