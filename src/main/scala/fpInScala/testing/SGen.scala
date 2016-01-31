@@ -6,3 +6,9 @@ case class SGen [A] (forSize: Int => Gen[A]) {
   def flatMap [B] (f: A => Gen[B]): SGen[B] =
     SGen(forSize andThen (_ flatMap f))
 }
+
+object SGen {
+  def listOf [A] (g: Gen[A]): SGen[List[A]] = SGen {
+    i => g.listOfN(Gen.unit(i))
+  }
+}
