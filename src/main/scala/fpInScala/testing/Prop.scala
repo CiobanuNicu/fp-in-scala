@@ -4,23 +4,23 @@ import fpInScala.testing.Prop._
 import fpInScala.purelyFunctionalState.RNG
 import fpInScala.dataStructures.stream.Stream
 
-case class Prop (run: (TestCases, RNG) => Result) {
+case class Prop (run: (MaxSize, TestCases, RNG) => Result) {
   def && (p: Prop): Prop = Prop {
-    (testCases, rng) => run(testCases, rng) match {
-      case Passed => p.run(testCases, rng)
+    (maxSize, testCases, rng) => run(maxSize, testCases, rng) match {
+      case Passed => p.run(maxSize, testCases, rng)
       case f: Falsified => f
     }
   }
 
   def || (p: Prop): Prop = Prop {
-    (testCases, rng) => run(testCases, rng) match {
-      case Falsified(failedCase, successes) => p.label(failedCase).run(testCases, rng)
+    (maxSize, testCases, rng) => run(maxSize, testCases, rng) match {
+      case Falsified(failedCase, successes) => p.label(failedCase).run(maxSize, testCases, rng)
       case p => p
     }
   }
 
   def label (tag: String): Prop = Prop {
-    (testCases, rng) => run(testCases, rng) match {
+    (maxSize, testCases, rng) => run(maxSize, testCases, rng) match {
       case Falsified(failedCase, successes) => Falsified(s"$tag\n$failedCase", successes)
       case p => p
     }
@@ -29,12 +29,27 @@ case class Prop (run: (TestCases, RNG) => Result) {
 
 object Prop {
   type FailedCase = String
+  type MaxSize = Int
   type SuccessCount = Int
   type TestCases = Int
-  type Result = Option[(FailedCase, SuccessCount)]
+//  type Result = Option[(FailedCase, SuccessCount)]
+
+  def forAll [A] (g: SGen[A]) (f: A => Boolean): Prop = forAll(g(_))(f)
+
+  def forAll [A] (g: Int => Gen[A]) (f: A => Boolean): Prop = Prop {
+    (maxSize: MaxSize, n: TestCases, rng: RNG) =>
+      val casesPerSize = n + (maxSize - 1) / maxSize
+      val props: Stream[Prop] =
+        Stream.from(0).take((n min maxSize) + 1).map(i => forAll(g(i))(f))
+      val prop: Prop =
+        props.map(p => Prop { (maxSize, _, rng) =>
+          p.run(maxSize, casesPerSize, rng)
+        }).toList.reduce(_ && _)
+      prop.run(maxSize, n, rng)
+  }
 
   def forAll [A] (as: Gen[A]) (f: A => Boolean): Prop = Prop {
-    (n: TestCases, rng: RNG) => randomStream(as)(rng).zip(Stream.from(0)).take(n).map {
+    (maxSize: MaxSize, n: TestCases, rng: RNG) => randomStream(as)(rng).zip(Stream.from(0)).take(n).map {
       case (a, i) => try {
         if (f(a)) Passed else Falsified(a.toString, i)
       } catch { case e: Exception => Falsified(buildMsg(a, e), i) }
