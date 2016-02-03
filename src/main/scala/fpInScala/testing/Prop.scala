@@ -1,7 +1,7 @@
 package fpInScala.testing
 
 import fpInScala.testing.Prop._
-import fpInScala.purelyFunctionalState.RNG
+import fpInScala.purelyFunctionalState.{SimpleRNG, RNG}
 import fpInScala.dataStructures.stream.Stream
 
 case class Prop (run: (MaxSize, TestCases, RNG) => Result) {
@@ -33,6 +33,14 @@ object Prop {
   type SuccessCount = Int
   type TestCases = Int
 //  type Result = Option[(FailedCase, SuccessCount)]
+
+  def run (p: Prop, maxSize: MaxSize = 100, testCases: TestCases = 100, rng: RNG = SimpleRNG(System.currentTimeMillis())): Unit =
+    p.run(maxSize, testCases, rng) match {
+      case Falsified(msg, n) =>
+        println(s"! Falsified after $n passed tests:\n $msg")
+      case Passed =>
+        println(s"+ OK, passed $testCases tests.")
+    }
 
   def forAll [A] (g: SGen[A]) (f: A => Boolean): Prop = forAll(g(_))(f)
 
