@@ -8,6 +8,7 @@ trait Parsers [ParseError, Parser[+_]] { self =>
 
   def run [A] (p: Parser[A]) (input: String): Either[ParseError, A]
   def char (c: Char): Parser[Char] = string(c.toString) map (_.charAt(0))
+  def succeed [A] (a: A): Parser[A] = string("") map (_ => a)
 
   def many [A] (p: Parser[A]): Parser[List[A]]
   def map [A, B] (p: Parser[A]) (f: A => B): Parser[B]
