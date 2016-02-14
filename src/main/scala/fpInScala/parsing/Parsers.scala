@@ -13,6 +13,7 @@ trait Parsers [ParseError, Parser[+_]] { self =>
   def slice [A] (p: Parser[A]): Parser[String]
 
   def many [A] (p: Parser[A]): Parser[List[A]]
+  def many1 [A] (p: Parser[A]): Parser[List[A]]
   def map [A, B] (p: Parser[A]) (f: A => B): Parser[B]
 
   def or [A] (s1: Parser[A], s2: Parser[A]): Parser[A]
