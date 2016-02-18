@@ -12,7 +12,7 @@ trait Parsers [ParseError, Parser[+_]] { self =>
 
   def slice [A] (p: Parser[A]): Parser[String]
 
-  def many [A] (p: Parser[A]): Parser[List[A]]
+  def many [A] (p: Parser[A]): Parser[List[A]] = map2(p, many(p))(_ :: _) or succeed(List())
   def many1 [A] (p: Parser[A]): Parser[List[A]] = map2(p, many(p))(_ :: _)
   def map [A, B] (p: Parser[A]) (f: A => B): Parser[B]
   def product [A, B] (p: Parser[A], p2: Parser[B]): Parser[(A, B)]
