@@ -18,6 +18,10 @@ trait Parsers [ParseError, Parser[+_]] { self =>
   def product [A, B] (p: Parser[A], p2: Parser[B]): Parser[(A, B)]
   def map2 [A, B, C] (p: Parser[A], p2: Parser[B]) (f: (A,B) => C): Parser[C] = map(product(p, p2))(f.tupled)
 
+  def listOfN [A] (n: Int, p: Parser[A]): Parser[List[A]] =
+    if (n < 1) succeed(List())
+    else map2(p, listOfN(n - 1, p))(_ :: _)
+
   def or [A] (s1: Parser[A], s2: Parser[A]): Parser[A]
   implicit def string (s: String): Parser[String]
   implicit def operators [A] (p: Parser[A]): ParserOps[A] = ParserOps[A](p)
