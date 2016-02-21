@@ -22,7 +22,7 @@ trait Parsers [ParseError, Parser[+_]] { self =>
     if (n < 1) succeed(List())
     else map2(p, listOfN(n - 1, p))(_ :: _)
 
-  def or [A] (s1: Parser[A], s2: Parser[A]): Parser[A]
+  def or [A] (s1: Parser[A], s2: => Parser[A]): Parser[A]
   implicit def string (s: String): Parser[String]
   implicit def operators [A] (p: Parser[A]): ParserOps[A] = ParserOps[A](p)
   implicit def asStringParser [A] (a: A) (implicit f: A => Parser[String]): ParserOps[String] = ParserOps(f(a))
