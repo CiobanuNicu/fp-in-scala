@@ -18,6 +18,8 @@ trait Parsers [ParseError, Parser[+_]] { self =>
   def product [A, B] (p: Parser[A], p2: => Parser[B]): Parser[(A, B)]
   def map2 [A, B, C] (p: Parser[A], p2: => Parser[B]) (f: (A,B) => C): Parser[C] = map(product(p, p2))(f.tupled)
 
+  def flatMap [A, B] (p: Parser[A]) (f: A => Parser[B]): Parser[B]
+
   def listOfN [A] (n: Int, p: Parser[A]): Parser[List[A]] =
     if (n < 1) succeed(List())
     else map2(p, listOfN(n - 1, p))(_ :: _)
@@ -34,6 +36,7 @@ trait Parsers [ParseError, Parser[+_]] { self =>
     def map [B] (f: A => B): Parser[B] = self.map(p)(f)
     def ** [B] (p2: Parser[B]): Parser[(A, B)] = self.product(p, p2)
     def product [B] (p2: Parser[B]): Parser[(A, B)] = self.product(p, p2)
+    def flatMap [B] (f: A => Parser[B]): Parser[B] = self.flatMap(p)(f)
   }
 
   object Laws {
