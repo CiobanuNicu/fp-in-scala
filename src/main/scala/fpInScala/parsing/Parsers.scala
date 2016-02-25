@@ -21,7 +21,8 @@ trait Parsers [ParseError, Parser[+_]] { self =>
   def product [A, B] (p: Parser[A], p2: => Parser[B]): Parser[(A, B)] =
     flatMap(p)(a => map(p2)(b => (a, b)))
 
-  def map2 [A, B, C] (p: Parser[A], p2: => Parser[B]) (f: (A,B) => C): Parser[C] = map(product(p, p2))(f.tupled)
+  def map2 [A, B, C] (p: Parser[A], p2: => Parser[B]) (f: (A,B) => C): Parser[C] =
+    flatMap(p)(a => map(p2)(b => f(a, b)))
 
   def flatMap [A, B] (p: Parser[A]) (f: A => Parser[B]): Parser[B]
 
