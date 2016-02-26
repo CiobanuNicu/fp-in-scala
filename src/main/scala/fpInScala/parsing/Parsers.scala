@@ -16,7 +16,9 @@ trait Parsers [ParseError, Parser[+_]] { self =>
 
   def many [A] (p: Parser[A]): Parser[List[A]] = map2(p, many(p))(_ :: _) or succeed(List())
   def many1 [A] (p: Parser[A]): Parser[List[A]] = map2(p, many(p))(_ :: _)
-  def map [A, B] (p: Parser[A]) (f: A => B): Parser[B]
+
+  def map [A, B] (p: Parser[A]) (f: A => B): Parser[B] =
+    flatMap(p)(f andThen succeed)
 
   def product [A, B] (p: Parser[A], p2: => Parser[B]): Parser[(A, B)] =
     flatMap(p)(a => map(p2)(b => (a, b)))
