@@ -10,8 +10,11 @@ trait Parsers [ParseError, Parser[+_]] { self =>
 
   def run [A] (p: Parser[A]) (input: String): Either[ParseError, A]
   def char (c: Char): Parser[Char] = string(c.toString) map (_.charAt(0))
+
+  // Always succeeds with the value a
   def succeed [A] (a: A): Parser[A] = string("") map (_ => a)
 
+  // Returns the portion of input inspected by p if successful
   def slice [A] (p: Parser[A]): Parser[String]
 
   def many [A] (p: Parser[A]): Parser[List[A]] = map2(p, many(p))(_ :: _) or succeed(List())
@@ -26,16 +29,23 @@ trait Parsers [ParseError, Parser[+_]] { self =>
   def map2 [A, B, C] (p: Parser[A], p2: => Parser[B]) (f: (A,B) => C): Parser[C] =
     flatMap(p)(a => map(p2)(b => f(a, b)))
 
+  // Runs a parser, then uses its result to select a second parser to run in sequence
   def flatMap [A, B] (p: Parser[A]) (f: A => Parser[B]): Parser[B]
 
   def listOfN [A] (n: Int, p: Parser[A]): Parser[List[A]] =
     if (n < 1) succeed(List())
     else map2(p, listOfN(n - 1, p))(_ :: _)
 
+  // Chooses between two parsers, first attempting p1, and then p2 if p1 fails
   def or [A] (s1: Parser[A], s2: => Parser[A]): Parser[A]
+
+  // Recognizes and returns a single String
   implicit def string (s: String): Parser[String]
+
   implicit def operators [A] (p: Parser[A]): ParserOps[A] = ParserOps[A](p)
   implicit def asStringParser [A] (a: A) (implicit f: A => Parser[String]): ParserOps[String] = ParserOps(f(a))
+
+  // Recognizes a regular expression s
   implicit def regex (r: Regex): Parser[String]
 
   case class ParserOps [A] (p: Parser[A]) {
