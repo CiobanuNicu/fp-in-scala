@@ -65,4 +65,17 @@ trait Parsers [ParseError, Parser[+_]] { self =>
     def mapLaw [A] (p: Parser[A]) (in: Gen[String]): Prop =
       equal(p, p.map(a => a))(in)
   }
+
+  def label [A] (msg: String) (p: Parser[A]): Parser[A]
+
+  case class Location (input: String, offset: Int = 0) {
+    lazy val line = input.slice(0, offset + 1).count(_ == '\n') + 1
+    lazy val col = input.slice(0, offset + 1).lastIndexOf('\n') match {
+      case -1 => offset + 1
+      case lineStart => offset - lineStart
+    }
+  }
+
+  def errorLocation (e: ParseError): Location
+  def errorMessage (e: ParseError): String
 }
