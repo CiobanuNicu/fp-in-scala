@@ -67,6 +67,7 @@ trait Parsers [ParseError, Parser[+_]] { self =>
   }
 
   def label [A] (msg: String) (p: Parser[A]): Parser[A]
+  def scope [A] (msg: String) (p: Parser[A]): Parser[A]
 
   case class Location (input: String, offset: Int = 0) {
     lazy val line = input.slice(0, offset + 1).count(_ == '\n') + 1
