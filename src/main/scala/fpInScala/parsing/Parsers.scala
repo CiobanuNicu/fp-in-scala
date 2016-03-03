@@ -6,7 +6,7 @@ import fpInScala.testing.Prop._
 
 import scala.util.matching.Regex
 
-trait Parsers [ParseError, Parser[+_]] { self =>
+trait Parsers [Parser[+_]] { self =>
 
   def run [A] (p: Parser[A]) (input: String): Either[ParseError, A]
   def char (c: Char): Parser[Char] = string(c.toString) map (_.charAt(0))
@@ -79,4 +79,6 @@ trait Parsers [ParseError, Parser[+_]] { self =>
 
   def errorLocation (e: ParseError): Location
   def errorMessage (e: ParseError): String
+
+  case class ParseError (stack: List[(Location, String)])
 }

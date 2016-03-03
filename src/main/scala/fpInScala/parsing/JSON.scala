@@ -13,5 +13,5 @@ object JSON {
   case class JObject (get: Map[String, JSON]) extends JSON
 
   // Stub out the method that would contain the solution . . . I guess we can use Throwable for the ParseError type?
-  def jsonParser [Parser[+_]] (P: Parsers[Throwable, Parser]): Parser[JSON] = ???
+  def jsonParser [Parser[+_]] (P: Parsers[Parser]): Parser[JSON] = ???
 }
