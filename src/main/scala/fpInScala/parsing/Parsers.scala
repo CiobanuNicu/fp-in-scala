@@ -81,4 +81,6 @@ trait Parsers [Parser[+_]] { self =>
   def errorMessage (e: ParseError): String
 
   case class ParseError (stack: List[(Location, String)])
+
+  def attempt [A] (p: Parser[A]): Parser[A]
 }
