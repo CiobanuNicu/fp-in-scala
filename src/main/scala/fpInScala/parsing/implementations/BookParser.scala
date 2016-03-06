@@ -7,7 +7,11 @@ import scala.util.matching.Regex
 class BookParser [+A]
 
 object BookParser extends Parsers[BookParser] {
-  type Parser[+A] = String => Either[ParseError, A]
+  type Parser[+A] = Location => Result[A]
+
+  trait Result[+A]
+  case class Success[+A] (get: A, charsConsumed: Int) extends Result[A]
+  case class Failure (get: ParseError) extends Result[Nothing]
 
   def run[A] (p: BookParser[A])(input: String): Either[BookParser.ParseError, A] = ???
 
