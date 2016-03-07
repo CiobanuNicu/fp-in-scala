@@ -22,7 +22,12 @@ object BookParser extends Parsers[BookParser] {
   def or[A] (s1: BookParser[A], s2: => BookParser[A]): BookParser[A] = ???
 
   // Recognizes and returns a single String
-  implicit def string (s: String): BookParser[String] = ???
+  implicit def string (s: String): Parser[String] =
+    (loc: Location) =>
+      if (loc.input.startsWith(s))
+        Success(s, loc.offset)
+      else
+        Failure(loc.toError(s"Expected: $s"))
 
   def errorMessage (e: BookParser.ParseError): String = ???
 

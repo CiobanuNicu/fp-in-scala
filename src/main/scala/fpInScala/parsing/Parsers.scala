@@ -75,6 +75,8 @@ trait Parsers [Parser[+_]] { self =>
       case -1 => offset + 1
       case lineStart => offset - lineStart
     }
+
+    def toError (msg: String): ParseError = ParseError(List((this, msg)))
   }
 
   def errorLocation (e: ParseError): Location
