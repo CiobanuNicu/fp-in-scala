@@ -36,7 +36,12 @@ object BookParser extends Parsers[BookParser] {
   def errorLocation (e: BookParser.ParseError): BookParser.Location = ???
 
   // Recognizes a regular expression s
-  implicit def regex (r: Regex): BookParser[String] = ???
+  implicit def regex (r: Regex): Parser[String] =
+    (loc: Location) =>
+      r.findPrefixOf(loc.input) match {
+        case Some(parsed) => Success(parsed, parsed.length)
+        case None => Failure(loc.toError(s"Expected $r"))
+      }
 
   // Returns the portion of input inspected by p if successful
   def slice[A] (p: BookParser[A]): BookParser[String] = ???
