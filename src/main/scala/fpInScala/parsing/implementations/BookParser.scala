@@ -43,6 +43,9 @@ object BookParser extends Parsers[BookParser] {
         case None => Failure(loc.toError(s"Expected $r"))
       }
 
+  // Always succeeds with the value a
+  def succeed [A] (a: A): Parser[A] = l => Success(a, 0)
+
   // Returns the portion of input inspected by p if successful
   def slice[A] (p: BookParser[A]): BookParser[String] = ???
 
