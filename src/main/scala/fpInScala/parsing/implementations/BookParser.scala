@@ -47,7 +47,11 @@ object BookParser extends Parsers[BookParser] {
   def succeed [A] (a: A): Parser[A] = l => Success(a, 0)
 
   // Returns the portion of input inspected by p if successful
-  def slice[A] (p: BookParser[A]): BookParser[String] = ???
+  def slice[A] (p: Parser[A]): Parser[String] =
+    (loc: Location) => p(loc) match {
+      case Success(_, n) => Success(loc.input.substring(loc.offset, loc.offset + n), n)
+      case f@Failure(_) => f
+    }
 
   def label[A] (msg: String)(p: BookParser[A]): BookParser[A] = ???
 
