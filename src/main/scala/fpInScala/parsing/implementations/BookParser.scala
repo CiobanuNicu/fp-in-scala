@@ -37,7 +37,8 @@ object BookParser extends Parsers[BookParser] {
 
   def errorMessage (e: BookParser.ParseError): String = ???
 
-  def scope[A] (msg: String)(p: BookParser[A]): BookParser[A] = ???
+  def scope[A] (msg: String) (p: Parser[A]): Parser[A] =
+    (loc: Location) => p(loc).mapError(_.push(loc, msg))
 
   def errorLocation (e: BookParser.ParseError): BookParser.Location = ???
 
