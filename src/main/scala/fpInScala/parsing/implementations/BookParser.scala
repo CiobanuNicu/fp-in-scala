@@ -10,14 +10,19 @@ object BookParser extends Parsers[BookParser] {
   type Parser[+A] = Location => Result[A]
 
   trait Result[+A] {
+    def uncommit: Result[A] = this match {
+      case Failure(e, true) => Failure(e, isCommitted = false)
+      case _ => this
+    }
+
     def mapError (f: ParseError => ParseError): Result[A] = this match {
-      case Failure(e) => Failure(f(e))
+      case Failure(e, committed) => Failure(f(e), committed)
       case _ => this
     }
   }
 
   case class Success[+A] (get: A, charsConsumed: Int) extends Result[A]
-  case class Failure (get: ParseError) extends Result[Nothing]
+  case class Failure (get: ParseError, isCommitted: Boolean) extends Result[Nothing]
 
   def run[A] (p: BookParser[A])(input: String): Either[BookParser.ParseError, A] = ???
 
@@ -33,7 +38,7 @@ object BookParser extends Parsers[BookParser] {
       if (loc.input.startsWith(s))
         Success(s, loc.offset)
       else
-        Failure(loc.toError(s"Expected: $s"))
+        Failure(loc.toError(s"Expected: $s"), isCommitted = false)
 
   def errorMessage (e: BookParser.ParseError): String = ???
 
@@ -47,7 +52,7 @@ object BookParser extends Parsers[BookParser] {
     (loc: Location) =>
       r.findPrefixOf(loc.input) match {
         case Some(parsed) => Success(parsed, parsed.length)
-        case None => Failure(loc.toError(s"Expected $r"))
+        case None => Failure(loc.toError(s"Expected $r"), isCommitted = false)
       }
 
   // Always succeeds with the value a
@@ -57,10 +62,11 @@ object BookParser extends Parsers[BookParser] {
   def slice[A] (p: Parser[A]): Parser[String] =
     (loc: Location) => p(loc) match {
       case Success(_, n) => Success(loc.input.substring(loc.offset, loc.offset + n), n)
-      case f@Failure(_) => f
+      case f@Failure(_, _) => f
     }
 
   def label[A] (msg: String)(p: BookParser[A]): BookParser[A] = ???
 
-  def attempt[A] (p: BookParser[A]): BookParser[A] = ???
+  def attempt[A] (p: Parser[A]): Parser[A] =
+    l => p(l).uncommit
 }
