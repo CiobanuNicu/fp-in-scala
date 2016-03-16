@@ -30,7 +30,11 @@ object BookParser extends Parsers[BookParser] {
   def flatMap[A, B] (p: BookParser[A])(f: (A) => BookParser[B]): BookParser[B] = ???
 
   // Chooses between two parsers, first attempting p1, and then p2 if p1 fails
-  def or[A] (s1: BookParser[A], s2: => BookParser[A]): BookParser[A] = ???
+  def or [A] (x: Parser[A], y: => Parser[A]): Parser[A] =
+    s => x(s) match {
+      case Failure(e, false) => y(s)
+      case r => r
+    }
 
   // Recognizes and returns a single String
   implicit def string (s: String): Parser[String] =
