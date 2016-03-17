@@ -1,5 +1,7 @@
 package fpInScala.parsing
 
+import fpInScala.parsing.implementations.BookParser
+
 import scala.language.{implicitConversions, higherKinds}
 import fpInScala.testing._
 import fpInScala.testing.Prop._
@@ -70,6 +72,8 @@ trait Parsers [Parser[+_]] { self =>
   def scope [A] (msg: String) (p: Parser[A]): Parser[A]
 
   case class Location (input: String, offset: Int = 0) {
+    def advanceBy (n: SuccessCount): Location = copy(offset = offset + n)
+
     lazy val line = input.slice(0, offset + 1).count(_ == '\n') + 1
     lazy val col = input.slice(0, offset + 1).lastIndexOf('\n') match {
       case -1 => offset + 1

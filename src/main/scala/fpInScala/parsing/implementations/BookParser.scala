@@ -10,6 +10,16 @@ object BookParser extends Parsers[BookParser] {
   type Parser[+A] = Location => Result[A]
 
   trait Result[+A] {
+    def advanceSuccess (n: Int): Result[A] = this match {
+      case Success(a, m) => Success(a, n + m)
+      case _ => this
+    }
+
+    def addCommit (isCommitted: Boolean): Result[A] = this match {
+      case Failure(e, c) => Failure(e, c || isCommitted)
+      case _ => this
+    }
+
     def uncommit: Result[A] = this match {
       case Failure(e, true) => Failure(e, isCommitted = false)
       case _ => this
@@ -27,7 +37,13 @@ object BookParser extends Parsers[BookParser] {
   def run[A] (p: BookParser[A])(input: String): Either[BookParser.ParseError, A] = ???
 
   // Runs a parser, then uses its result to select a second parser to run in sequence
-  def flatMap[A, B] (p: BookParser[A])(f: (A) => BookParser[B]): BookParser[B] = ???
+  def flatMap [A, B] (f: Parser[A]) (g: (A) => Parser[B]): Parser[B] =
+    s => f(s) match {
+      case Success(a, n) => g(a)(s.advanceBy(n))
+                            .addCommit(n != 0)
+                            .advanceSuccess(n)
+      case e@Failure(_, _) => e
+    }
 
   // Chooses between two parsers, first attempting p1, and then p2 if p1 fails
   def or [A] (x: Parser[A], y: => Parser[A]): Parser[A] =
