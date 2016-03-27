@@ -25,7 +25,7 @@ class CompanionObjectTests extends FlatSpec with ShouldMatchers with TableDriven
 
   forAll (expectedSums) { (inputs: Array[Int], expectedSum: Int) =>
     val list = List(inputs:_*)
-    List.sum(list) should be === expectedSum
+    List.sum(list) shouldEqual expectedSum
   }
 
 
@@ -50,6 +50,6 @@ class CompanionObjectTests extends FlatSpec with ShouldMatchers with TableDriven
 
   forAll (expectedProducts) { (inputs: Array[Double], expectedProduct: Double) =>
     val list = List(inputs:_*)
-    List.product(list) should be === expectedProduct
+    List.product(list) shouldEqual expectedProduct
   }
 }

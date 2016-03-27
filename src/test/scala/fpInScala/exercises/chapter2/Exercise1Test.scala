@@ -32,6 +32,6 @@ class Exercise1Test extends FlatSpec with ShouldMatchers with TableDrivenPropert
 
   forAll (fibonaccis) { (n: Int, expectedFibOfN: Int) =>
     val actualFibOfN = fib(n)
-    actualFibOfN should be === expectedFibOfN
+    actualFibOfN shouldEqual expectedFibOfN
   }
 }

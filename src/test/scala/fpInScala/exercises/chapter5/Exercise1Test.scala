@@ -21,6 +21,6 @@ class Exercise1Test extends FlatSpec with ShouldMatchers with TableDrivenPropert
     val expectedList = listContents.toList
     val streamOfContents = Stream(listContents: _*)
 
-    streamOfContents.toList should be === expectedList
+    streamOfContents.toList shouldEqual expectedList
   }
 }

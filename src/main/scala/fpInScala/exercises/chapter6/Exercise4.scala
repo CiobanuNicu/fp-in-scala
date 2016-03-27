@@ -11,9 +11,9 @@ object Exercise4 {
       else {
         val (l, r) = s
         val (i, r1) = Exercise1.nonNegativeInt(r)
-        go(c - 1)(i :: l, r1)
+        go(c - 1)((i :: l, r1))
       }
     }
-    go(count)(List(), rng)
+    go(count)((List(), rng))
   }
 }

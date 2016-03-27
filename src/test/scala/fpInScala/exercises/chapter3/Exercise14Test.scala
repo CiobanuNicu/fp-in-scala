@@ -22,7 +22,7 @@ class Exercise14Test extends FlatSpec with ShouldMatchers with TableDrivenProper
   forAll (testData) { (list1, list2) =>
     val appended = defaultAppend(list1, list2)
 
-    Exercise14.appendRight(list1, list2) should be === appended
-    Exercise14.appendLeft(list1,  list2) should be === appended
+    Exercise14.appendRight(list1, list2) shouldEqual appended
+    Exercise14.appendLeft(list1,  list2) shouldEqual appended
   }
 }

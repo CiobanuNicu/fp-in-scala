@@ -27,7 +27,7 @@ class Exercise10Test extends FlatSpec with ShouldMatchers with TableDrivenProper
 
   forAll (expectedSums) { (inputs: Array[Int], expectedSum: Int) =>
     val list = List(inputs:_*)
-    foldLeftSum(list) should be === expectedSum
+    foldLeftSum(list) shouldEqual expectedSum
   }
 
   val expectedProducts = Table(
@@ -53,6 +53,6 @@ class Exercise10Test extends FlatSpec with ShouldMatchers with TableDrivenProper
 
   forAll (expectedProducts) { (inputs: Array[Double], expectedProduct: Double) =>
     val list = List(inputs:_*)
-    foldLeftProduct(list) should be === expectedProduct
+    foldLeftProduct(list) shouldEqual expectedProduct
   }
 }

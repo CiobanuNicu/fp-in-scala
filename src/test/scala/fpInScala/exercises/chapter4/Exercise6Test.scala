@@ -62,7 +62,7 @@ class Exercise6Test extends FlatSpec with ShouldMatchers {
     val lae = Left(ae): Either[Exception, Int]
 
     ten.map2(Right("success"))(_ + _) should be (ten)
-    lae.map2(Left(new IndexOutOfBoundsException))(_ + _) should be (lae)
+    lae.map2(Left(new IndexOutOfBoundsException))(_ + _) shouldEqual lae
   }
 
   "Right of x map2 Left of y, f" should "return Left of y" in {

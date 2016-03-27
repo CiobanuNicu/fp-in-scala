@@ -1,6 +1,5 @@
 package fpInScala.exercises.chapter5
 
-import fpInScala.dataStructures.stream._
 import org.scalatest.{FlatSpec, ShouldMatchers}
 
 class Exercise10Test extends FlatSpec with ShouldMatchers {

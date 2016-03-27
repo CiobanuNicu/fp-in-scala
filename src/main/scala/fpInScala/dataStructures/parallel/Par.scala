@@ -77,7 +77,10 @@ object Par {
   }
 
   // A helper function to evaluate an action asynchronously using some ExecutorService
-  def eval (es: ExecutorService) (r: => Unit): Unit = es.submit(new Callable[Unit] { def call = r })
+  def eval (es: ExecutorService) (r: => Unit): Unit = {
+    val _ = es.submit(new Callable[Unit] { def call = r })
+    ()
+  }
 
   // For working on fixed-size threadpools, this certainly avoids deadlock. The only problem is that we aren't actually
   // forking a separate logical thread to evaluate fa. So delay(hugeComputation)(es) for some ExecutorService es, would

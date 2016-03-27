@@ -22,6 +22,6 @@ class Exercise9Test extends FlatSpec with ShouldMatchers with TableDrivenPropert
   )
 
   forAll (listsAndLengths) { (list: List[Int], expectedLength: Int) =>
-    Exercise9.length(list) should be === expectedLength
+    Exercise9.length(list) shouldEqual expectedLength
   }
 }
