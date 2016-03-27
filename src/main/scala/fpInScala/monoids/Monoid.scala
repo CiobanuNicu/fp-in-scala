@@ -6,6 +6,13 @@ trait Monoid [A] {
 }
 
 object Monoid {
+  // Operations
+
+  // We can write a general function concatenate that folds a list with a monoid:
+  def concatenate [A] (as: List[A], m: Monoid[A]): A = as.foldLeft(m.zero)(m.op)
+
+  // Instances
+
   val stringMonoid = new Monoid[String] {
     def op (a1: String, a2: String): String = a1 + a2
     val zero: String = ""
