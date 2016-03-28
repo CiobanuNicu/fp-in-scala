@@ -11,6 +11,10 @@ object Monoid {
   // We can write a general function concatenate that folds a list with a monoid:
   def concatenate [A] (as: List[A], m: Monoid[A]): A = as.foldLeft(m.zero)(m.op)
 
+  // But what if our list has an element type that doesn't have a Monoid instance?
+  // Well, we can always map over the list to turn it into a type that does:
+  def foldMap [A, B] (as: List[A], m: Monoid[B]) (f: A => B): B = as.foldLeft(m.zero)((b, a) => m.op(b, f(a)))
+
   // Instances
 
   val stringMonoid = new Monoid[String] {
