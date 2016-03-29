@@ -15,6 +15,10 @@ object Monoid {
   // Well, we can always map over the list to turn it into a type that does:
   def foldMap [A, B] (as: List[A], m: Monoid[B]) (f: A => B): B = as.foldLeft(m.zero)((b, a) => m.op(b, f(a)))
 
+  def foldLeft [A, B] (as: List[A]) (z: B) (f: (B, A) => B): B = foldMap(as, dual(endoMonoid[B]))(a => b => f(b, a))(z)
+
+  def foldRight [A, B] (as: List[A]) (z: B) (f: (A, B) => B): B = foldMap(as, endoMonoid[B])(f.curried)(z)
+
   // Instances
 
   val stringMonoid = new Monoid[String] {
