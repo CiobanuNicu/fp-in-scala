@@ -15,6 +15,17 @@ object Monoid {
   // Well, we can always map over the list to turn it into a type that does:
   def foldMap [A, B] (as: List[A], m: Monoid[B]) (f: A => B): B = as.foldLeft(m.zero)((b, a) => m.op(b, f(a)))
 
+  def foldMapV [A,B] (v: IndexedSeq[A], m: Monoid[B]) (f: A => B): B = {
+    if (v.length > 1) {
+      val (l, r) = v.splitAt(v.length / 2)
+      m.op(foldMapV(l, m)(f), foldMapV(r, m)(f))
+    } else if (v.length == 1) {
+      f(v(0))
+    } else {
+      m.zero
+    }
+  }
+
   def foldLeft [A, B] (as: List[A]) (z: B) (f: (B, A) => B): B = foldMap(as, dual(endoMonoid[B]))(a => b => f(b, a))(z)
 
   def foldRight [A, B] (as: List[A]) (z: B) (f: (A, B) => B): B = foldMap(as, endoMonoid[B])(f.curried)(z)
