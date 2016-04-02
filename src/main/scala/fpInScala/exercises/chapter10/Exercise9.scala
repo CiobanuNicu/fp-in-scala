@@ -4,16 +4,17 @@ import fpInScala.monoids.Monoid
 
 object Exercise9 {
   def ordered (ints: IndexedSeq[Int]): Boolean = {
-    val orderedMonoid = new Monoid[(Option[Int], Boolean)] {
-      def op (a1: (Option[Int], Boolean), a2: (Option[Int], Boolean)): (Option[Int], Boolean) = (a1, a2) match {
-        case ((None, b1), (o2, b2)) => (o2, b1 && b2)
-        case ((o1, b1), (None, b2)) => (o1, b1 && b2)
-        case ((Some(i1), b1), (Some(i2), b2)) => (Some(i2), b1 && b2 && (i1 <= i2))
-      }
+    val orderedMonoid = new Monoid[Option[(Int, Int, Boolean)]] {
+      def op (o1: Option[(Int, Int, Boolean)], o2: Option[(Int, Int, Boolean)]) =
+        (o1, o2) match {
+          case (Some((x1, y1, p)), Some((x2, y2, q))) => Some((x1 min x2, y1 max y2, p && q && y1 <= x2))
+          case (x, None) => x
+          case (None, x) => x
+        }
 
-      val zero: (Option[Int], Boolean) = (None, true)
+      val zero = None
     }
 
-    Monoid.foldMap[Int, (Option[Int], Boolean)](ints.toList, orderedMonoid)(x => (Some(x), true))._2
+    Monoid.foldMapV(ints, orderedMonoid)(i => Some((i, i, true))).forall(_._3)
   }
 }
