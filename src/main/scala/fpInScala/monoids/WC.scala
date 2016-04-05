@@ -15,4 +15,21 @@ object WC {
 
     val zero: WC = Stub("")
   }
+
+  def wordCount (s: String): Int = {
+    def toWC (c: Char): WC = {
+      if (c.isWhitespace) {
+        Part("", 0, "")
+      } else {
+        Stub(c.toString)
+      }
+    }
+
+    def count (st: String): Int = s.length min 1
+
+    Monoid.foldMapV[Char, WC](s.toIndexedSeq, wcMonoid)(toWC) match {
+      case Stub(word) => count(word)
+      case Part(l, counted, r) => count(l) + counted + count(r)
+    }
+  }
 }
