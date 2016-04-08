@@ -1,5 +1,7 @@
 package fpInScala.monoids
 
+import fpInScala.dataStructures.tree.Tree
+
 import scala.language.higherKinds
 
 trait Foldable[F[_]] {
@@ -48,4 +50,9 @@ object StreamFoldable extends Foldable[Stream] {
 
   override def foldLeft [A, B] (as: Stream[A]) (z: B) (f: (B, A) => B): B =
     as.foldLeft(z)(f)
+}
+
+object TreeFoldable extends Foldable[Tree] {
+  import Tree._
+  override def foldMap [A, B] (as: Tree[A]) (f: (A) => B) (mb: Monoid[B]): B = fold(as)(f)(mb.op)
 }
