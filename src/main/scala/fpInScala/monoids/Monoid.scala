@@ -91,4 +91,10 @@ object Monoid {
     def op (a1: A => A, a2: A => A): (A) => A = a1 compose a2
     val zero: A => A = identity
   }
+
+  def productMonoid [A, B] (A: Monoid[A], B: Monoid[B]): Monoid[(A, B)] = new Monoid[(A, B)] {
+    def op (a1: (A, B), a2: (A, B)): (A, B) = (A.op(a1._1, a2._1), B.op(a1._2, a2._2))
+
+    val zero: (A, B) = (A.zero, B.zero)
+  }
 }
