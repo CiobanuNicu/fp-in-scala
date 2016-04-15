@@ -106,4 +106,10 @@ object Monoid {
 
     def zero = Map[K, V]()
   }
+
+  def functionMonoid [A, B] (B: Monoid[B]): Monoid[A => B] = new Monoid[A => B] {
+    def op (a1: A => B, a2: A => B): A => B = x => B.op(a1(x), a2(x))
+
+    val zero: A => B = _ => B.zero
+  }
 }
