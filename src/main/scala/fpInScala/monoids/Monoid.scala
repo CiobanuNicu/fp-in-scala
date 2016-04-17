@@ -42,6 +42,10 @@ object Monoid {
 
   def foldRight [A, B] (as: List[A]) (z: B) (f: (A, B) => B): B = foldMap(as, endoMonoid[B])(f.curried)(z)
 
+  def bag [A] (as: IndexedSeq[A]): Map[A, Int] = {
+    foldMapV(as, mapMergeMonoid(intAddition): Monoid[Map[A, Int]])(a => Map(a -> 1))
+  }
+
   // Instances
 
   val stringMonoid = new Monoid[String] {
