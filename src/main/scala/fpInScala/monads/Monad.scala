@@ -1,5 +1,6 @@
 package fpInScala.monads
 
+import fpInScala.dataStructures.parallel.Nonblocking.Par
 import fpInScala.testing.Gen
 
 import scala.language.higherKinds
@@ -19,5 +20,10 @@ object Monad {
   val genMonad = new Monad[Gen] {
     def unit [A] (a: => A): Gen[A] = Gen.unit(a)
     def flatMap [A,B] (ma: Gen[A]) (f: A => Gen[B]): Gen[B] = ma flatMap f
+  }
+
+  val parMonad = new Monad[Par] {
+    def unit [A] (a: => A): Par[A] = Par.unit(a)
+    def flatMap [A, B] (ma: Par[A]) (f: (A) => Par[B]): Par[B] = Par.flatMap(ma)(f)
   }
 }
