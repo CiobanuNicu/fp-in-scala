@@ -26,4 +26,7 @@ object Monad {
     def unit [A] (a: => A): Par[A] = Par.unit(a)
     def flatMap [A, B] (ma: Par[A]) (f: (A) => Par[B]): Par[B] = Par.flatMap(ma)(f)
   }
+
+  // TODO - Implement Monad[Parser] when Parser is redone
+  // val parserMonad = ???
 }
