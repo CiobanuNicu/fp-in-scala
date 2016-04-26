@@ -29,4 +29,9 @@ object Monad {
 
   // TODO - Implement Monad[Parser] when Parser is redone
   // val parserMonad = ???
+
+  val optionMonad = new Monad[Option] {
+    def unit [A] (a: => A): Option[A] = Option(a)
+    def flatMap [A, B] (ma: Option[A]) (f: (A) => Option[B]): Option[B] = ma flatMap f
+  }
 }
