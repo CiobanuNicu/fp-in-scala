@@ -1,9 +1,10 @@
 package fpInScala.monads
 
 import fpInScala.dataStructures.parallel.Nonblocking.Par
+import fpInScala.dataStructures.state.State
 import fpInScala.testing.Gen
 
-import scala.language.higherKinds
+import scala.language.{higherKinds, reflectiveCalls}
 
 trait Monad[F[_]] extends Functor[F] {
   def unit [A] (a: => A): F[A]
@@ -43,5 +44,10 @@ object Monad {
   val listMonad = new Monad[List] {
     def unit [A] (a: => A): List[A] = List(a)
     def flatMap[A, B] (ma: List[A])(f: (A) => List[B]): List[B] = ma flatMap f
+  }
+
+  def stateMonad [S] = new Monad[({type F[X] = State[S, X]})#F] {
+    def unit [A] (a: => A): State[S, A] = State.unit(a)
+    def flatMap [A, B] (ma: State[S, A]) (f: (A) => State[S, B]): State[S, B] = ma flatMap f
   }
 }
