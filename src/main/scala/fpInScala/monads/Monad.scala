@@ -76,4 +76,9 @@ object Monad {
     def unit [A] (a: => A): State[S, A] = State.unit(a)
     def flatMap [A, B] (ma: State[S, A]) (f: (A) => State[S, B]): State[S, B] = ma flatMap f
   }
+
+  val identityMonad = new Monad[Id] {
+    def unit [A] (a: => A): Id[A] = Id(a)
+    def flatMap [A, B] (ma: Id[A]) (f: (A) => Id[B]): Id[B] = ma flatMap f
+  }
 }
