@@ -4,15 +4,18 @@ package fpInScala.dataStructures.state
 // Add them as methods on the State case class where possible.
 // Otherwise you should put them in a State companion object.
 
-case class State [S, +A] (run: S => (A, S)) {
-  import State._
+case class State [S, A] (run: S => (A, S)) {
+
+  def map [B] (f: A => B): State[S, B] =
+    State(s => {
+      val (a, s1) = run(s)
+      (f(a), s1)
+    })
 
   def flatMap [B] (f: A => State[S, B]): State[S, B] = State(s => {
     val (a, s1) = run(s)
     f(a).run(s1)
   })
-
-  def map [B] (f: A => B): State[S, B] = flatMap(a => unit(f(a)))
 
   def map2 [B, C] (sb: State[S, B]) (f: (A, B) => C): State[S, C] = flatMap(a => sb.map(b => f(a, b)))
 
