@@ -77,6 +77,15 @@ object Monad {
     def flatMap [A, B] (ma: State[S, A]) (f: (A) => State[S, B]): State[S, B] = ma flatMap f
   }
 
+  val F = stateMonad[Int]
+
+  def zipWithIndex [A] (as: List[A]): List[(Int, A)] =
+    as.foldLeft(F.unit(List[(Int, A)]()))((acc, a) => for {
+      xs <- acc
+      n <- State.get
+      _ <- State.set(n + 1)
+    } yield (n, a) :: xs).run(0)._1.reverse
+
   val identityMonad = new Monad[Id] {
     def unit [A] (a: => A): Id[A] = Id(a)
     def flatMap [A, B] (ma: Id[A]) (f: (A) => Id[B]): Id[B] = ma flatMap f
