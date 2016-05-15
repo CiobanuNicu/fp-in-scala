@@ -43,6 +43,11 @@ trait Monad[F[_]] extends Functor[F] {
   def composeInTermsOfJoinAndMap [A, B, C] (f: A => F[B], g: B => F[C]): A => F[C] = a => join(map(f(a))(g))
 }
 
+case class Id [A] (value: A) {
+  def map [B] (f: A => B): Id[B] = Id(f(value))
+  def flatMap [B] (f: A => Id[B]): Id[B] = f(value)
+}
+
 object Monad {
   val genMonad = new Monad[Gen] {
     def unit [A] (a: => A): Gen[A] = Gen.unit(a)
