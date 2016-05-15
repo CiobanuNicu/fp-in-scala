@@ -96,3 +96,16 @@ object Monad {
     def flatMap [A, B] (ma: Id[A]) (f: (A) => Id[B]): Id[B] = ma flatMap f
   }
 }
+
+case class Reader [R, A] (run: R => A)
+
+object Reader {
+  def readerMonad [R] = new Monad[({type f[x] = Reader[R, x]})#f] {
+    def unit [A] (a: => A): Reader[R, A] = Reader(_ => a)
+    def flatMap [A, B] (ma: Reader[R, A]) (f: (A) => Reader[R, B]): Reader[R, B] = Reader[R, B](r => {
+      f(ma.run(r)).run(r)
+    })
+  }
+
+  def ask [R]: Reader[R, R] = Reader(r => r)
+}
