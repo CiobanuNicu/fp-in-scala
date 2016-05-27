@@ -36,3 +36,14 @@ trait ApplicativeWithUnitAndApplyAsPrimitives [F[_]] extends Functor[F] {
   def map [A, B] (fa: F[A]) (f: A => B): F[B] = apply(unit(f))(fa)
   def map2 [A, B, C] (fa: F[A], fb: F[B]) (f: (A, B) => C): F[C] = apply(map(fa)(f.curried))(fb)
 }
+
+object Applicative {
+  // The idea behind this Applicative is to combine corresponding elements via zipping
+  val streamApplicative = new Applicative[Stream] {
+    // The infinite, constant stream
+    def unit [A] (a: => A): Stream[A] = Stream.continually(a)
+
+    // Combine elements pointwise
+    def map2 [A, B, C] (fa: Stream[A], fb: Stream[B]) (f: (A, B) => C): Stream[C] = fa zip fb map f.tupled
+  }
+}
