@@ -45,5 +45,10 @@ object Applicative {
 
     // Combine elements pointwise
     def map2 [A, B, C] (fa: Stream[A], fb: Stream[B]) (f: (A, B) => C): Stream[C] = fa zip fb map f.tupled
+
+    // For streams, sequence zips the list of streams together into a stream
+    // of lists of each streams next value, until any one of the streams completes
+    // It has the effect of transposing the list
+    override def sequence [A] (a: List[Stream[A]]): Stream[List[A]] = traverse(a)(identity)
   }
 }
