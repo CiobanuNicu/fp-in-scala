@@ -51,4 +51,15 @@ object Applicative {
     // It has the effect of transposing the list
     override def sequence [A] (a: List[Stream[A]]): Stream[List[A]] = traverse(a)(identity)
   }
+
+  def validationApplicative [E]: Applicative[({type F[X] = Validation[E, X]})#F] = new Applicative[({type F[X] = Validation[E, X]})#F] {
+    def unit [A] (a: => A): Validation[E, A] = Success(a)
+
+    def map2 [A, B, C] (fa: Validation[E, A], fb: Validation[E, B]) (f: (A, B) => C): Validation[E, C] = (fa, fb) match {
+      case (Success(a), Success(b)) => Success(f(a, b))
+      case (Failure(ea, ta), Failure(eb, tb)) => Failure(ea, (ta :+ eb) ++ tb)
+      case (e@Failure(_, _), _) => e
+      case (_, e@Failure(_, _)) => e
+    }
+  }
 }
