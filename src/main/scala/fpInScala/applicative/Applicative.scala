@@ -62,4 +62,20 @@ object Applicative {
       case (_, e@Failure(_, _)) => e
     }
   }
+
+  object Laws {
+    def leftAndRightIdentity [S, T, U, V[_]] (f: T => U, g: S => T, fa: V[S], ap: Applicative[V]): Unit = {
+      import ap._
+
+      // Obeys Functor identity laws
+      map(fa)(identity) == fa
+      map(map(fa)(g))(f) == map(fa)(f compose g)
+
+      // As well as Applicative identity laws
+      map2(unit(()), fa)((_, a) => a) == fa
+      map2(fa, unit(()))((a, _) => a) == fa
+
+      ()
+    }
+  }
 }
