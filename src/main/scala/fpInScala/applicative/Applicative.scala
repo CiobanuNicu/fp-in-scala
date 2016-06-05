@@ -92,5 +92,53 @@ object Applicative {
 
       ()
     }
+
+    def naturality [V[_], U, A, B] (ap: Applicative[V], a: V[A], b: V[B], f: A => B, g: B => A): Unit = {
+      import ap._
+
+      // To illustrate naturality, let's look at a simple example using Option.
+      val F: Applicative[Option] = ???
+
+      case class Employee(name: String, id: Int)
+      case class Pay(rate: Double, hoursPerYear: Double)
+
+      val e: Option[Employee] = ???
+      val pay: Option[Pay] = ???
+
+      def format1 (e: Option[Employee], pay: Option[Pay]): Option[String] = F.map2(e, pay) {
+        (e, pay) => s"${e.name} makes ${pay.rate * pay.hoursPerYear}"
+      }
+
+      format1(e, pay)
+
+      // Here we're applying a transformation to the result of map2 - from Employee we extract the name,
+      // and from Pay we extract the yearly wage. But we could just as easily apply these transformations separately,
+      // before calling format, giving format an Option [String] and Option[Double] rather than an Option[Employee]
+      // and Option[Pay]. This might be a reasonable refactoring, so that format doesn't need to know the details
+      // of how the Employee and Pay data types are represented.
+
+      def format2 (name: Option[String], pay: Option[Double]): Option[String] =
+        F.map2(e, pay) { (e, pay) => s"$e makes $pay" }
+
+      format2(
+        F.map(e)(_.name),
+        F.map(pay)(pay => pay.rate * pay.hoursPerYear))
+
+      // We're applying the transformation to extract the name and pay fields before calling map2.
+      // We expect this program to have the same meaning as before, and this sort of pattern comes up frequently.
+      // When working with Applicative effects, we generally have the option of applying transformations
+      // before or after combining values with map2. The naturality law states that it doesn’t matter;
+      // we get the same result either way.
+
+      // Assuming we have a function, productF, which combines two functions into one function
+      // that takes both their arguments and returns the pair of their results:
+      def productF [I, O, I2, O2] (f: I => O, g: I2 => O2): (I,I2) => (O,O2) =
+        (i,i2) => (f(i), g(i2))
+
+      // Then the naturality law can be stated formally as the following:
+      map2(a,b)(productF(f,g)) == product(map(a)(f), map(b)(g))
+
+      ()
+    }
   }
 }
