@@ -77,5 +77,20 @@ object Applicative {
 
       ()
     }
+
+    def associativity [V[_], U] (ap: Applicative[V], fa: V[U], fb: V[U], fc: V[U]): Unit = {
+      import ap._
+
+      // Recall that product just combines two effects into a pair, using map2;
+      // And if we have pairs nested on the right, we can always turn those into pairs nested on the left:
+      def assoc [A, B, C] (p: (A, (B, C))): ((A, B), C) =
+        p match { case (a, (b, c)) => ((a, b), c) }
+
+      // Using these combinators, product and assoc, the law of associativity
+      // for applicative functors is as follows:
+      product(product(fa,fb), fc) == map(product(fa, product(fb,fc)))(assoc)
+
+      ()
+    }
   }
 }
